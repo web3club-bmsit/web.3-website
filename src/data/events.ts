@@ -1,6 +1,9 @@
+// ─────────────────────────────────────────────────────────────
 // Event types & mock data for Web3 club events
+// All event data lives here — never hardcode inside UI components
+// ─────────────────────────────────────────────────────────────
 
-
+// Registration modal only needs these 4 fields — kept minimal deliberately
 export type EventMeta = {
   id: string;
   title: string;
@@ -8,7 +11,7 @@ export type EventMeta = {
   teamMax: number;
 };
 
-// A single schedule entry 
+// A single schedule entry — extracted so it's not repeated inline everywhere
 export type AgendaItem = {
   time: string;
   item: string;
@@ -18,7 +21,7 @@ export type AgendaItem = {
 // only live in one place. Change EventMeta → change propagates here too.
 export type HackathonEvent = EventMeta & {
   subtitle: string;
-  date: string;        
+  date: string;        // human-readable display string e.g. "May 24–26, 2026"
   startDate: string;   // ISO — used to split upcoming vs past programmatically
   location: string;
   prize: string;
@@ -39,7 +42,9 @@ export const FILTERS = [
   "Community",
 ];
 
+// ─────────────────────────────────────────────────────────────
 // UPCOMING EVENTS (dates after today — April 2026)
+// ─────────────────────────────────────────────────────────────
 
 const UPCOMING: HackathonEvent[] = [
   {
@@ -165,7 +170,9 @@ const UPCOMING: HackathonEvent[] = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────
 // PAST EVENTS (dates before today)
+// ─────────────────────────────────────────────────────────────
 
 const PAST: HackathonEvent[] = [
   {
@@ -240,8 +247,9 @@ const PAST: HackathonEvent[] = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────
 // Combined & sorted (newest first)
-
+// ─────────────────────────────────────────────────────────────
 
 export const EVENTS: HackathonEvent[] = [...UPCOMING, ...PAST].sort(
   (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
