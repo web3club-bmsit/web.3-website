@@ -1,6 +1,6 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/server";
 
 export async function registerForEvent(
   data: { name: string; email: string; college: string; year: string; event: string },
@@ -34,7 +34,8 @@ export async function registerForEvent(
     }
 
     // Insert into Supabase registrations table
-    const { error } = await supabase.from("registrations").insert([
+    const supabaseClient = await createClient();
+    const { error } = await supabaseClient.from("registrations").insert([
       {
         name: data.name,
         email: data.email,

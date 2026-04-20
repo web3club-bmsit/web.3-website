@@ -33,44 +33,17 @@ type Particle = {
   pulse: number;
   pulseSpeed: number;
 };
-function useCustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const pos = useRef({ x: -999, y: -999 });
-  const raf = useRef<number>(0);
 
-  useEffect(() => {
-    const move = (e: MouseEvent) => {
-      pos.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener("mousemove", move);
-    const animate = () => {
-      if (cursorRef.current) {
-        cursorRef.current.style.left = pos.current.x + "px";
-        cursorRef.current.style.top = pos.current.y + "px";
-      }
-      raf.current = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => {
-      window.removeEventListener("mousemove", move);
-      cancelAnimationFrame(raf.current);
-    };
-  }, []);
-
-  return cursorRef;
-}
 
 export default function TeamGrid() {
   const chunkedRows = chunkArray(teamMembers, 3);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [glitching, setGlitching] = useState(false);
-  const [cursorMode, setCursorMode] = useState<"default" | "icon">("default");
   const glitchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -999, y: -999 });
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
-  const cursorRef = useCustomCursor();
   const frameRef = useRef(0);
   const initParticles = useCallback((w: number, h: number) => {
     particlesRef.current = Array.from({ length: 60 }, () => ({
@@ -247,10 +220,6 @@ draw();
 
   return (
    <>
-   <div
-        ref={cursorRef}
-        className={`custom-cursor mode-${cursorMode}`}
-      />
 
       <section
         style={{
@@ -262,8 +231,6 @@ draw();
         }}
         onMouseMove={handleSectionMouseMove}
         onMouseLeave={handleSectionMouseLeave}
-        // Switch cursor back to default when hovering section (not icons)
-        onMouseEnter={() => setCursorMode("default")}
       >
         {/* Particle canvas */}
         <canvas
@@ -415,8 +382,7 @@ draw();
               key={rowIdx}
               row={row}
               rowIdx={rowIdx}
-              onIconEnter={() => setCursorMode("icon")}
-              onIconLeave={() => setCursorMode("default")}
+              rowIdx={rowIdx}
             />
           ))}
         </div>
@@ -462,13 +428,9 @@ draw();
 function RevealRow({
   row,
   rowIdx,
-  onIconEnter,
-  onIconLeave,
 }: {
   row: typeof teamMembers;
   rowIdx: number;
-  onIconEnter: () => void;
-  onIconLeave: () => void;
 }) {
   const { ref, inView } = useInView(0.12);
   return (
@@ -493,8 +455,6 @@ function RevealRow({
           >
             <MemberCardWrapper
               member={member}
-              onIconEnter={onIconEnter}
-              onIconLeave={onIconLeave}
             />
           </div>
         ))}
@@ -506,22 +466,12 @@ function RevealRow({
 // Thin wrapper so we can intercept social icon hover events
 function MemberCardWrapper({
   member,
-  onIconEnter,
-  onIconLeave,
 }: {
   member: typeof teamMembers[number];
-  onIconEnter: () => void;
-  onIconLeave: () => void;
 }) {
   return (
     <div
       style={{ position: "relative" }}
-      onMouseOver={(e) => {
-        if ((e.target as HTMLElement).closest("a")) onIconEnter();
-      }}
-      onMouseOut={(e) => {
-        if ((e.target as HTMLElement).closest("a")) onIconLeave();
-      }}
     >
       <MemberCard {...member} />
     </div>

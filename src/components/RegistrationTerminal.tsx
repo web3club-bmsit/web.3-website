@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Turnstile } from "@marsidev/react-turnstile";
 import { registerForEvent } from "@/app/actions/register";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
+import { LogIn } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 type Props = {
   eventName: string;
@@ -10,12 +13,11 @@ type Props = {
 };
 
 type Line =
-  | { type: "output" | "error" | "success" | "system"; text: string }
+  | { type: "output" | "error" | "success" | "system" | "highlight" | "ascii"; text: string }
   | { type: "input"; text: string };
 
 const STEPS = [
   { field: "name", prompt: "> Enter your name" },
-  { field: "email", prompt: "> Enter your email" },
   { field: "college", prompt: "> Enter your college (or type none)" },
   { field: "year", prompt: "> Enter your graduation year (or type none)" },
 ];
@@ -33,6 +35,8 @@ const lineColor: Record<string, string> = {
   error: "text-red-400",
   success: "text-green-400",
   input: "text-lime-400",
+  highlight: "text-green-400 font-black text-xl py-2 tracking-widest bg-green-400/10 px-3 border-l-4 border-green-400 w-fit rounded-r-md my-2",
+  ascii: "text-green-400/60 font-bold leading-none mb-2"
 };
 
 export default function RegistrationTerminal({ eventName, onClose }: Props) {
@@ -44,6 +48,10 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(-1);
   const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  const supabase = createClient();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -51,34 +59,94 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
   const push = useCallback((line: Line) => setLines((l) => [...l, line]), []);
 
   useEffect(() => {
-    setLines([]);
-    setStepIdx(0);
-    setData({});
-    setPhase("form");
-    setInput("");
+    let active = true;
 
-    const boot = [
-      { type: "system" as const, text: "Sovereign Network Terminal v1.0.0 — Event Registration Shell" },
-      { type: "system" as const, text: "Establishing secure connection..." },
-      { type: "success" as const, text: `Connection established. Session UUID: ${crypto.randomUUID?.() || '000000-0000'}` },
-      { type: "output" as const, text: "───────────────────────────────────────" },
-      { type: "output" as const, text: "Follow the prompts to register." },
-      { type: "output" as const, text: "Type 'help' for commands or 'exit' to abort." },
-      { type: "output" as const, text: "───────────────────────────────────────" },
-      { type: "output" as const, text: "" },
-    ];
+    const checkUser = async () => {
+      let fetchedUser: User | null = null;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        fetchedUser = user ?? null;
+        if (active) setUser(fetchedUser);
+      } catch (e) {
+        console.error('Auth check error:', e);
+      } finally {
+        if (active) setAuthLoading(false);
+      }
+      if (active) runBootSequence(fetchedUser);
+    };
 
-    let delay = 0;
-    boot.forEach((line) => {
-      delay += 120;
-      setTimeout(() => push(line), delay);
+    const runBootSequence = (currentUser: User | null) => {
+      setLines([]);
+      setStepIdx(0);
+      setData({});
+      setPhase("form");
+      setInput("");
+
+      const boot = [
+        { type: "system" as const, text: "Sovereign Network Terminal v1.0.0 — Event Registration Shell" },
+        { type: "ascii" as const, text: `
+██╗    ██╗███████╗██████╗ ██████╗ 
+██║    ██║██╔════╝██╔══██╗╚════██╗
+██║ █╗ ██║█████╗  ██████╔╝ █████╔╝
+██║███╗██║██╔══╝  ██╔══██╗ ╚═══██╗
+╚███╔███╔╝███████╗██████╔╝██████╔╝
+ ╚══╝╚══╝ ╚══════╝╚═════╝ ╚═════╝ 
+        `},
+        { type: "highlight" as const, text: `TARGET EVENT: ${eventName}` },
+        { type: "system" as const, text: "Establishing secure connection..." },
+        { type: "success" as const, text: `Connection established. Session UUID: ${crypto.randomUUID?.() || '000000-0000'}` },
+        { type: "output" as const, text: "───────────────────────────────────────" },
+      ];
+
+      if (!currentUser) {
+        boot.push(
+          { type: "error" as const, text: "ACCESS DENIED: AUTHENTICATION REQUIRED" },
+          { type: "output" as const, text: "You must be logged in to participate in flagship events." },
+          { type: "output" as const, text: "───────────────────────────────────────" }
+        );
+      } else {
+        boot.push(
+          { type: "success" as const, text: `AUTHENTICATED AS: ${currentUser.email}` },
+          { type: "output" as const, text: "Follow the prompts to register." },
+          { type: "output" as const, text: "Type 'help' for commands or 'exit' to abort." },
+          { type: "output" as const, text: "───────────────────────────────────────" },
+          { type: "output" as const, text: "" }
+        );
+      }
+
+      let delay = 0;
+      boot.forEach((line) => {
+        delay += 120;
+        setTimeout(() => {
+          if (active) push(line);
+        }, delay);
+      });
+
+      if (currentUser) {
+        setTimeout(() => {
+          if (active) {
+            push({ type: "output", text: `[Step 1/${STEPS.length}] ${STEPS[0].prompt}:` });
+            inputRef.current?.focus();
+          }
+        }, delay + 200);
+      }
+    };
+
+    checkUser();
+
+    return () => {
+      active = false;
+    };
+  }, [push, eventName]);
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=${window.location.pathname}`,
+      },
     });
-
-    setTimeout(() => {
-      push({ type: "output", text: `[Step 1/${STEPS.length}] ${STEPS[0].prompt}:` });
-      inputRef.current?.focus();
-    }, delay + 200);
-  }, [push]);
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -138,7 +206,7 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
 
           const payload = {
             name: data.name,
-            email: data.email,
+            email: user?.email || "",
             college: data.college,
             year: data.year,
             event: eventName,
@@ -236,7 +304,7 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-3xl h-[600px] bg-[#0a0c0f] border border-green-500/20 rounded-xl flex flex-col shadow-[0_0_80px_rgba(34,197,94,0.1)] font-mono text-sm overflow-hidden">
+      <div className="w-full max-w-6xl h-[85vh] min-h-[650px] bg-[#0a0c0f] border border-green-500/20 rounded-xl flex flex-col shadow-[0_0_150px_rgba(34,197,94,0.2)] font-mono text-sm overflow-hidden">
         {/* Title bar */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-green-500/10 bg-white/[0.02] shrink-0">
           <button
@@ -281,18 +349,34 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
         {/* Input */}
         {phase !== "submitting" && (
           <div className="flex items-center gap-3 px-6 py-4 border-t border-green-500/10 shrink-0 bg-white/[0.01]">
-            <span className="text-green-400 font-bold">$</span>
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={onKeyDown}
-              placeholder="awaiting command..."
-              autoComplete="off"
-              spellCheck={false}
-              autoFocus
-              className="flex-1 bg-transparent border-none outline-none text-lime-400 placeholder-white/20 caret-green-400 font-mono text-sm"
-            />
+            {user ? (
+              <>
+                <span className="text-green-400 font-bold">$</span>
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={onKeyDown}
+                  placeholder="awaiting command..."
+                  autoComplete="off"
+                  spellCheck={false}
+                  autoFocus
+                  className="flex-1 bg-transparent border-none outline-none text-lime-400 placeholder-white/20 caret-green-400 font-mono text-sm"
+                />
+              </>
+            ) : !authLoading ? (
+              <button
+                onClick={handleGoogleLogin}
+                className="flex-1 flex items-center justify-center gap-3 py-2 bg-green-400 text-black font-bold rounded-md hover:bg-green-300 transition-all uppercase tracking-tighter"
+              >
+                <LogIn className="w-4 h-4" />
+                Initialize OAuth Handshake to Continue
+              </button>
+            ) : (
+              <div className="flex-1 text-center animate-pulse text-white/20 font-mono text-xs uppercase tracking-widest">
+                Checking credentials...
+              </div>
+            )}
           </div>
         )}
       </div>
