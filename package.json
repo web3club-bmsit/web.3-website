@@ -9,16 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
-<<<<<<< HEAD
+    "@marsidev/react-turnstile": "^1.5.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
     "@react-three/postprocessing": "^3.0.4",
+    "@supabase/supabase-js": "^2.103.3",
+    "autoprefixer": "^10.5.0",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.38.0",
+    "gsap": "^3.15.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^1.8.0",
-=======
     "motion": "^12.38.0",
->>>>>>> 7d52136ef3b559ec6c890aeabd63220791bbd4dd
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -29,11 +31,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-<<<<<<< HEAD
     "@types/three": "^0.184.0",
-=======
-    "autoprefixer": "^10.5.0",
->>>>>>> 7d52136ef3b559ec6c890aeabd63220791bbd4dd
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "postcss": "^8.5.10",
