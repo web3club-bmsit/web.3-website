@@ -9,6 +9,8 @@
   --accent: #059669; /* Emerald 600 for light mode */
   --card-bg: rgba(8, 8, 12, 0.04);
   --border: rgba(8, 8, 12, 0.08);
+  --nav-surface: rgba(255, 255, 255, 0.75);
+  --nav-border: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
@@ -17,6 +19,8 @@
   --accent: #CDEF33;
   --card-bg: rgba(255, 255, 255, 0.05);
   --border: rgba(255, 255, 255, 0.1);
+  --nav-surface: rgba(8, 8, 12, 0.65);
+  --nav-border: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -25,6 +29,8 @@
   --color-accent: var(--accent);
   --color-card: var(--card-bg);
   --color-border: var(--border);
+  --color-nav-surface: var(--nav-surface);
+  --color-nav-border: var(--nav-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

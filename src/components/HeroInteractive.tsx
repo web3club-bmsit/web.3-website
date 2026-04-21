@@ -5,20 +5,16 @@ import * as THREE from "three";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { useTheme } from "next-themes";
 
 // Register ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// ════════════════════════════════════════════════════════════
-//  CONSTANTS
-// ════════════════════════════════════════════════════════════
-const ACCENT = 0x4ade80;
-const BG = 0x08080c;
+const SCRAMBLE_CHARS = "#◆Ξ0x▲9f$&";
 const P_COUNT = 2500;
 const NODE_CT = 55;
-const SCRAMBLE_CHARS = "#◆Ξ0x▲9f$&";
 
 const TEXTS = [
   { id: "txt0", text: "The decentralized revolution starts here" },
@@ -26,6 +22,43 @@ const TEXTS = [
   { id: "txt2", text: "Built by students. Powered by Ethereum." },
   { id: "txt3", text: "Web3 BMSIT" },
 ];
+
+// ── THEME PALETTES ──
+const DARK_PALETTE = {
+  bg: 0x08080c,
+  fog: 0x08080c,
+  accent: 0x4ade80,        // green-400
+  fill: 0x7c3aed,          // violet-600
+  btcColor: 0x8b6c3c,      // bronze
+  solColor: 0x9945ff,      // Solana purple
+  ambient: 0x111122,
+  bgClass: "bg-[#08080c]",
+  overlayGradient: "radial-gradient(ellipse at center,transparent 40%,rgba(8,8,12,0.85) 100%)",
+  textClass: "text-white/90",
+  subtextClass: "text-white/30",
+  headingGradient: "from-white via-white to-green-400",
+  scrollHintClass: "text-white/20",
+  btnClass: "bg-green-400 text-black shadow-[0_0_20px_rgba(74,222,128,0.25)] ring-1 ring-green-400/20",
+  progressClass: "bg-green-400",
+};
+
+const LIGHT_PALETTE = {
+  bg: 0xf0f4ff,            // soft blue-white
+  fog: 0xe8eeff,           // slightly deeper hue for fog
+  accent: 0x6366f1,        // indigo-500
+  fill: 0xec4899,          // pink-500
+  btcColor: 0xf59e0b,      // amber-400 - vibrant gold
+  solColor: 0x8b5cf6,      // violet-500
+  ambient: 0xccddff,
+  bgClass: "bg-[#f0f4ff]",
+  overlayGradient: "radial-gradient(ellipse at center,transparent 40%,rgba(240,244,255,0.80) 100%)",
+  textClass: "text-slate-800",
+  subtextClass: "text-slate-500",
+  headingGradient: "from-indigo-600 via-violet-600 to-pink-500",
+  scrollHintClass: "text-slate-400",
+  btnClass: "bg-indigo-600 text-white shadow-[0_0_20px_rgba(99,102,241,0.35)] ring-1 ring-indigo-500/20",
+  progressClass: "bg-indigo-500",
+};
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,13 +68,16 @@ export default function Hero() {
   const scrollHintRef = useRef<HTMLDivElement>(null);
   const fixedLayerRef = useRef<HTMLDivElement>(null);
 
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme !== "light";
+  const PAL = isDark ? DARK_PALETTE : LIGHT_PALETTE;
+
   // Scramble utility
   const scramble = (id: string, finalText: string, duration = 850) => {
     const el = document.getElementById(id);
     if (!el) return;
     const len = finalText.length;
     const t0 = performance.now();
-    
     const tick = () => {
       const p = Math.min((performance.now() - t0) / duration, 1);
       const revealedCount = Math.floor(p * len);
@@ -60,23 +96,19 @@ export default function Hero() {
   useEffect(() => {
     if (!canvasRef.current || !containerRef.current || !scrollSpacerRef.current) return;
 
-    // ── INITIALIZE LENIS ──
+    // ── LENIS ──
     const lenis = new Lenis({
       duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
-    // ── THREE.JS SETUP ──
+    // ── THREE SETUP ──
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(BG);
-    scene.fog = new THREE.FogExp2(BG, 0.038);
+    scene.background = new THREE.Color(PAL.bg);
+    scene.fog = new THREE.FogExp2(PAL.fog, 0.038);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 0, 7);
@@ -90,28 +122,29 @@ export default function Hero() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = isDark ? 1.1 : 1.4;
 
-    // Lights
-    scene.add(new THREE.AmbientLight(0x111122, 0.6));
-    const keyLight = new THREE.PointLight(ACCENT, 4, 30);
+    // ── LIGHTS ──
+    scene.add(new THREE.AmbientLight(PAL.ambient, isDark ? 0.6 : 1.2));
+    const keyLight = new THREE.PointLight(PAL.accent, isDark ? 4 : 6, 30);
     keyLight.position.set(3, 4, 5);
     scene.add(keyLight);
-    const fillLight = new THREE.PointLight(0x7c3aed, 1.5, 25);
+    const fillLight = new THREE.PointLight(PAL.fill, isDark ? 1.5 : 2.5, 25);
     fillLight.position.set(-4, -2, 3);
     scene.add(fillLight);
-    const hoverLight = new THREE.PointLight(ACCENT, 0, 12);
+    const hoverLight = new THREE.PointLight(PAL.accent, 0, 12);
     scene.add(hoverLight);
 
-    // ── SHADERS & OBJECTS ──
-    
-    // ETH — Iridescent Morphing Octahedron
+    // ── ETH — Iridescent Morphing Octahedron ──
     const ethGeo = new THREE.IcosahedronGeometry(1.4, 4);
     const ethMat = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
         uMorph: { value: 0 },
         uScale: { value: 1 },
+        uAccent: { value: new THREE.Color(PAL.accent) },
+        uFill: { value: new THREE.Color(PAL.fill) },
+        uDark: { value: isDark ? 1.0 : 0.0 },
       },
       vertexShader: `
         uniform float uTime, uMorph, uScale;
@@ -132,7 +165,8 @@ export default function Hero() {
       `,
       fragmentShader: `
         varying vec3 vWorldPos, vViewDir, vNorm;
-        uniform float uTime;
+        uniform float uTime, uDark;
+        uniform vec3 uAccent, uFill;
         vec3 pal(float t) {
           return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
         }
@@ -148,9 +182,9 @@ export default function Hero() {
           vec3 h = normalize(lDir + vViewDir);
           float spec = pow(max(dot(n, h), 0.0), 80.0);
           vec3 col = iri * diff;
-          col += vec3(0.29, 0.87, 0.5) * fresnel * 0.55;
-          col += vec3(1.0) * spec * 0.25;
-          col += vec3(0.29, 0.87, 0.5) * 0.04;
+          col += uAccent * fresnel * (uDark > 0.5 ? 0.55 : 0.75);
+          col += vec3(1.0) * spec * (uDark > 0.5 ? 0.25 : 0.4);
+          col += uFill * 0.08;
           gl_FragColor = vec4(col, 1.0);
         }
       `,
@@ -158,14 +192,14 @@ export default function Hero() {
     const ethMesh = new THREE.Mesh(ethGeo, ethMat);
     scene.add(ethMesh);
 
-    // BTC — Bronze Icosahedron
+    // ── BTC ──
     const btcMat = new THREE.MeshPhysicalMaterial({
-      color: 0x8b6c3c,
+      color: PAL.btcColor,
       metalness: 0.88,
       roughness: 0.42,
-      emissive: ACCENT,
-      emissiveIntensity: 0.06,
-      iridescence: 0.35,
+      emissive: PAL.accent,
+      emissiveIntensity: isDark ? 0.06 : 0.15,
+      iridescence: isDark ? 0.35 : 0.6,
       iridescenceIOR: 1.4,
       transparent: true,
       opacity: 0,
@@ -174,12 +208,12 @@ export default function Hero() {
     btcMesh.visible = false;
     scene.add(btcMesh);
 
-    // SOL — Torus Knot
+    // ── SOL ──
     const solMat = new THREE.MeshPhysicalMaterial({
-      color: 0x9945ff,
+      color: PAL.solColor,
       metalness: 0.72,
-      roughness: 0.15,
-      iridescence: 1.0,
+      roughness: isDark ? 0.15 : 0.1,
+      iridescence: isDark ? 1.0 : 0.8,
       iridescenceIOR: 1.5,
       transparent: true,
       opacity: 0,
@@ -188,7 +222,7 @@ export default function Hero() {
     solMesh.visible = false;
     scene.add(solMesh);
 
-    // Particles
+    // ── PARTICLES ──
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(P_COUNT * 3);
     for (let i = 0; i < P_COUNT * 3; i += 3) {
@@ -198,20 +232,24 @@ export default function Hero() {
     }
     pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
     const pMat = new THREE.PointsMaterial({
-      color: ACCENT,
-      size: 0.028,
+      color: PAL.accent,
+      size: isDark ? 0.028 : 0.032,
       transparent: true,
-      opacity: 0.35,
+      opacity: isDark ? 0.35 : 0.55,
       sizeAttenuation: true,
       depthWrite: false,
     });
     const particles = new THREE.Points(pGeo, pMat);
     scene.add(particles);
 
-    // Nodes
+    // ── NODES & GRAPH ──
     const nodes: THREE.Vector3[] = [];
     for (let i = 0; i < NODE_CT; i++) {
-      nodes.push(new THREE.Vector3((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 7, (Math.random() - 0.5) * 7));
+      nodes.push(new THREE.Vector3(
+        (Math.random() - 0.5) * 12,
+        (Math.random() - 0.5) * 7,
+        (Math.random() - 0.5) * 7
+      ));
     }
     const pNodeMap = new Uint8Array(P_COUNT);
     for (let i = 0; i < P_COUNT; i++) pNodeMap[i] = Math.floor(Math.random() * NODE_CT);
@@ -229,19 +267,24 @@ export default function Hero() {
     });
     const lineGeo = new THREE.BufferGeometry();
     lineGeo.setAttribute("position", new THREE.BufferAttribute(lineArr, 3));
-    const lineMat = new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0, depthWrite: false });
+    const lineMat = new THREE.LineBasicMaterial({
+      color: PAL.accent,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    });
     const lineSegments = new THREE.LineSegments(lineGeo, lineMat);
     scene.add(lineSegments);
 
-    // Grid
-    const grid = new THREE.GridHelper(60, 60, ACCENT, ACCENT);
+    // ── GRID ──
+    const grid = new THREE.GridHelper(60, 60, PAL.accent, PAL.accent);
     grid.position.y = -3.5;
-    (grid.material as THREE.Material).opacity = 0.045;
+    (grid.material as THREE.Material).opacity = isDark ? 0.045 : 0.08;
     (grid.material as THREE.Material).transparent = true;
     (grid.material as THREE.Material).depthWrite = false;
     scene.add(grid);
 
-    // ── ANIMATION & SCROLL ──
+    // ── MOUSE & SCROLL ──
     const clock = new THREE.Clock();
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
 
@@ -257,16 +300,12 @@ export default function Hero() {
     const setAct = (i: number) => {
       if (i === currentAct) return;
       currentAct = i;
-      
       const acts = document.querySelectorAll(".hero-act");
       acts.forEach((el, idx) => {
         el.classList.toggle("opacity-100", idx === i);
         el.classList.toggle("opacity-0", idx !== i);
       });
-
-      if (i >= 0 && i < TEXTS.length) {
-        scramble(TEXTS[i].id, TEXTS[i].text);
-      }
+      if (i >= 0 && i < TEXTS.length) scramble(TEXTS[i].id, TEXTS[i].text);
       if (i === 3) scramble("txt3sub", "BMSIT College's Blockchain Club", 650);
       if (i > 0 && scrollHintRef.current) scrollHintRef.current.style.opacity = "0";
     };
@@ -278,24 +317,23 @@ export default function Hero() {
       onUpdate: (self) => {
         scrollProgress = self.progress;
         if (progressRef.current) progressRef.current.style.width = `${scrollProgress * 100}%`;
-        
-        // FADE OUT & HIDE LOGIC:
-        // Ensures the hero section ceases to exist once passed.
+
         if (fixedLayerRef.current) {
           const fadeOut = Math.max(0, 1 - (scrollProgress - 0.9) * 10);
           fixedLayerRef.current.style.opacity = scrollProgress > 0.9 ? fadeOut.toString() : "1";
           fixedLayerRef.current.style.visibility = scrollProgress >= 1.0 ? "hidden" : "visible";
           fixedLayerRef.current.style.pointerEvents = scrollProgress >= 1.0 ? "none" : "auto";
         }
-        
+
         if (scrollProgress < 0.25) setAct(0);
         else if (scrollProgress < 0.50) setAct(1);
         else if (scrollProgress < 0.75) setAct(2);
-        else if (scrollProgress < 1.0)  setAct(3);
-        else setAct(-1); // Hide act text fully at the end
+        else if (scrollProgress < 1.0) setAct(3);
+        else setAct(-1);
       },
     });
 
+    // ── ANIMATION LOOP ──
     const animate = () => {
       const dt = clock.getDelta();
       const t = clock.getElapsedTime();
@@ -359,47 +397,43 @@ export default function Hero() {
 
       // Particles
       const pa = pGeo.attributes.position.array as Float32Array;
+      const baseOpacity = isDark ? 0.30 : 0.50;
       if (scrollProgress < 0.50) {
-        pMat.opacity += (0.30 - pMat.opacity) * 0.05;
-        pMat.size = 0.028;
+        pMat.opacity += (baseOpacity - pMat.opacity) * 0.05;
+        pMat.size = isDark ? 0.028 : 0.032;
         for (let i = 0; i < P_COUNT; i++) {
           const i3 = i * 3;
           pa[i3] += Math.sin(t * 0.08 + i * 0.11) * 0.0015;
-          pa[i3+1] += Math.cos(t * 0.07 + i * 0.07) * 0.0015;
-          pa[i3+2] += Math.sin(t * 0.09 + i * 0.04) * 0.0015;
+          pa[i3 + 1] += Math.cos(t * 0.07 + i * 0.07) * 0.0015;
+          pa[i3 + 2] += Math.sin(t * 0.09 + i * 0.04) * 0.0015;
         }
       } else if (scrollProgress < 0.75) {
-        pMat.opacity += (0.55 - pMat.opacity) * 0.04;
-        pMat.size = 0.038;
+        pMat.opacity += ((baseOpacity + 0.25) - pMat.opacity) * 0.04;
+        pMat.size = isDark ? 0.038 : 0.044;
         const ap = (scrollProgress - 0.50) / 0.25;
         const spd = 0.015 + ap * 0.04;
         for (let i = 0; i < P_COUNT; i++) {
           const nd = nodes[pNodeMap[i]];
           const i3 = i * 3;
           const jit = 0.22;
-          const tx = nd.x + Math.sin(i * 0.1 + t * 0.4) * jit;
-          const ty = nd.y + Math.cos(i * 0.13 + t * 0.4) * jit;
-          const tz = nd.z + Math.sin(i * 0.07 + t * 0.4) * jit;
-          pa[i3] += (tx - pa[i3]) * spd;
-          pa[i3+1] += (ty - pa[i3+1]) * spd;
-          pa[i3+2] += (tz - pa[i3+2]) * spd;
+          pa[i3] += (nd.x + Math.sin(i * 0.1 + t * 0.4) * jit - pa[i3]) * spd;
+          pa[i3 + 1] += (nd.y + Math.cos(i * 0.13 + t * 0.4) * jit - pa[i3 + 1]) * spd;
+          pa[i3 + 2] += (nd.z + Math.sin(i * 0.07 + t * 0.4) * jit - pa[i3 + 2]) * spd;
         }
       } else {
-        pMat.opacity += (0.45 - pMat.opacity) * 0.04;
+        pMat.opacity += ((baseOpacity + 0.15) - pMat.opacity) * 0.04;
         for (let i = 0; i < P_COUNT; i++) {
           const nd = nodes[pNodeMap[i]];
           const i3 = i * 3;
           const jit = 0.15;
-          const tx = nd.x + Math.sin(i * 0.1 + t * 0.25) * jit;
-          const ty = nd.y + Math.cos(i * 0.13 + t * 0.25) * jit;
-          const tz = nd.z + Math.sin(i * 0.07 + t * 0.25) * jit;
-          pa[i3] += (tx - pa[i3]) * 0.015;
-          pa[i3+1] += (ty - pa[i3+1]) * 0.015;
-          pa[i3+2] += (tz - pa[i3+2]) * 0.015;
+          pa[i3] += (nd.x + Math.sin(i * 0.1 + t * 0.25) * jit - pa[i3]) * 0.015;
+          pa[i3 + 1] += (nd.y + Math.cos(i * 0.13 + t * 0.25) * jit - pa[i3 + 1]) * 0.015;
+          pa[i3 + 2] += (nd.z + Math.sin(i * 0.07 + t * 0.25) * jit - pa[i3 + 2]) * 0.015;
         }
       }
       pGeo.attributes.position.needsUpdate = true;
-      grid.material.opacity = 0.04 + Math.sin(t * 0.3) * 0.01;
+      const gridMat = grid.material as THREE.Material;
+      gridMat.opacity = (isDark ? 0.04 : 0.08) + Math.sin(t * 0.3) * 0.01;
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
@@ -419,24 +453,29 @@ export default function Hero() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
       lenis.destroy();
       renderer.dispose();
     };
-  }, []);
+    // Re-run when theme changes to rebuild scene with correct colors
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedTheme]);
 
   return (
-    <div ref={containerRef} className="relative z-0 bg-[#08080c]">
-      {/* 
-          WRAPPER FOR FIXED ELEMENTS 
-          This layer manages the definitive "stop" for the hero visuals.
-      */}
+    <div ref={containerRef} className={`relative z-0 ${PAL.bgClass}`}>
       <div ref={fixedLayerRef} className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300">
-        {/* Background Overlay */}
-        <div className="absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(8,8,12,0.85)_100%)]" />
-        
+        {/* Background Vignette Overlay */}
+        <div
+          className="absolute inset-0 z-[1]"
+          style={{ background: PAL.overlayGradient }}
+        />
+
         {/* Progress Bar */}
-        <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-green-400 z-30 transition-[width] duration-75" style={{ width: "0%" }} />
+        <div
+          ref={progressRef}
+          className={`absolute top-0 left-0 h-[2px] z-30 transition-[width] duration-75 ${PAL.progressClass}`}
+          style={{ width: "0%" }}
+        />
 
         {/* Canvas */}
         <canvas ref={canvasRef} className="absolute top-0 left-0 z-[1] transition-opacity duration-300" />
@@ -446,25 +485,39 @@ export default function Hero() {
           {TEXTS.map((t, i) => (
             <div
               key={t.id}
-              className={`hero-act absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-8 transition-opacity duration-500 opacity-0 w-full max-w-[calc(100vw-2rem)] mx-auto`}
+              className="hero-act absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-8 transition-opacity duration-500 opacity-0 w-full max-w-[calc(100vw-2rem)] mx-auto"
             >
               {i === 3 ? (
                 <div className="flex flex-col items-center">
-                  <h1 id={t.id} className="text-[clamp(2.4rem,10vw,8rem)] font-black text-center uppercase tracking-tighter leading-[0.9] bg-gradient-to-br from-white via-white to-green-400 bg-clip-text text-transparent" />
-                  <p id="txt3sub" className="mt-4 text-[clamp(0.55rem,1.4vw,0.9rem)] font-semibold uppercase tracking-[0.25em] text-white/30 text-center" />
-                  <button className="pointer-events-auto mt-12 px-10 py-4 bg-green-400 text-black font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:scale-105 transition-transform shadow-[0_0_20px_rgba(74,222,128,0.25)] ring-1 ring-green-400/20 active:scale-95">
+                  <h1
+                    id={t.id}
+                    className={`text-[clamp(2.4rem,10vw,8rem)] font-black text-center uppercase tracking-tighter leading-[0.9] bg-gradient-to-br ${PAL.headingGradient} bg-clip-text text-transparent`}
+                  />
+                  <p
+                    id="txt3sub"
+                    className={`mt-4 text-[clamp(0.55rem,1.4vw,0.9rem)] font-semibold uppercase tracking-[0.25em] text-center ${PAL.subtextClass}`}
+                  />
+                  <button
+                    className={`pointer-events-auto mt-12 px-10 py-4 font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:scale-105 transition-transform active:scale-95 ${PAL.btnClass}`}
+                  >
                     Join the Chain →
                   </button>
                 </div>
               ) : (
-                <p id={t.id} className="text-[clamp(1.1rem,4vw,2.4rem)] font-bold text-center max-w-2xl leading-[1.2] text-white/90 drop-shadow-sm" />
+                <p
+                  id={t.id}
+                  className={`text-[clamp(1.1rem,4vw,2.4rem)] font-bold text-center max-w-2xl leading-[1.2] drop-shadow-sm ${PAL.textClass}`}
+                />
               )}
             </div>
           ))}
         </div>
 
         {/* Scroll Hint */}
-        <div ref={scrollHintRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[9px] font-bold uppercase tracking-[0.35em] text-white/20 transition-opacity duration-500">
+        <div
+          ref={scrollHintRef}
+          className={`absolute bottom-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[9px] font-bold uppercase tracking-[0.35em] transition-opacity duration-500 ${PAL.scrollHintClass}`}
+        >
           <span className="inline-block animate-bounce">↓ scroll to explore</span>
         </div>
       </div>

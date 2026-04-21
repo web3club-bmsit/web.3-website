@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { LogIn, LogOut, User as UserIcon, ShieldAlert, Loader2, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
 
 // ─────────────────────────────────────────────────────────────
 // ADD YOUR TABS HERE — just push an object to this array.
@@ -29,6 +30,7 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   
   const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
   const supabase = createClient();
 
   useEffect(() => {
@@ -92,28 +94,34 @@ export default function Navbar() {
     window.location.href = "/";
   };
 
+  const isHero = pathname === "/" && !scrolled;
+
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 ${
-          scrolled 
-            ? "bg-background/80 backdrop-blur-md border-b border-accent/20 shadow-lg" 
-            : "bg-black/20 backdrop-blur-[2px]"
+        className={`fixed top-4 left-0 right-0 z-[9999] transition-all duration-500 transform ${
+          scrolled ? "translate-y-0" : "translate-y-2"
         }`}
       >
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div 
+          className={`mx-auto transition-all duration-500 ease-out flex items-center justify-between px-6 py-2 rounded-full border shadow-2xl backdrop-blur-xl ${
+            scrolled 
+              ? "max-w-4xl bg-nav-surface border-nav-border" 
+              : "max-w-5xl bg-black/10 border-white/10"
+          }`}
+        >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative w-10 h-10 flex items-center justify-center">
+            <div className="relative w-9 h-9 flex items-center justify-center">
               <Image
                 src="/logos/clubLogo-white.png"
                 alt="WEB.3 BMSIT"
-                width={32}
-                height={32}
-                className="w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]"
+                width={28}
+                height={28}
+                className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(74,222,128,0.5)] ${!scrolled && !isHero && theme === 'light' ? 'invert' : isHero ? '' : (theme === 'light' ? 'invert' : '')}`}
               />
             </div>
-            <span className="font-mono text-accent font-bold text-sm tracking-wider group-hover:text-white transition-colors uppercase">
+            <span className={`font-mono font-bold text-xs tracking-widest transition-colors uppercase ${isHero ? 'text-accent' : scrolled ? 'text-accent' : 'text-accent'}`}>
               WEB.3
             </span>
           </Link>
@@ -125,10 +133,12 @@ export default function Navbar() {
                 <Link
                   href={tab.href}
                   onClick={() => setWithActive(tab.label)}
-                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
+                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                     active === tab.label
                       ? "text-accent bg-accent/10"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
+                      : isHero 
+                        ? "text-white/60 hover:text-white hover:bg-white/5" 
+                        : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   {tab.label}
@@ -139,52 +149,58 @@ export default function Navbar() {
               <li>
                 <Link
                   href="/admin"
-                  className="px-4 py-2 flex items-center gap-2 rounded-md text-sm font-semibold text-yellow-400/70 hover:text-yellow-400 hover:bg-yellow-400/5 transition-colors"
+                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    isHero 
+                      ? "text-yellow-400/60 hover:text-yellow-400 hover:bg-white/5" 
+                      : "text-yellow-500/70 hover:text-yellow-500 hover:bg-yellow-500/5"
+                  }`}
                 >
-                  <ShieldAlert className="w-4 h-4" />
+                  <ShieldAlert className="w-3.5 h-3.5" />
                   Admin
                 </Link>
               </li>
             )}
           </ul>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-md hover:bg-foreground/5 text-foreground/70 hover:text-foreground transition-all"
+              className={`p-2 rounded-full transition-all duration-300 ${
+                isHero ? "text-white/70 hover:text-white hover:bg-white/10" : "text-foreground/70 hover:text-foreground hover:bg-foreground/10"
+              }`}
               aria-label="Toggle Theme"
             >
               {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
             {/* Auth State (Desktop) */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-3 border-l border-white/10 pl-3 ml-1">
               {user ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div className="flex flex-col items-end">
-                    <span className={`text-[10px] font-mono uppercase tracking-tighter ${scrolled ? 'text-foreground/30' : 'text-white/40'}`}>Authenticated</span>
-                    <span className={`text-xs font-semibold max-w-[120px] truncate ${scrolled ? 'text-foreground/60' : 'text-white/70'}`}>{user.email}</span>
+                    <span className={`text-[9px] font-mono uppercase tracking-tighter ${isHero ? 'text-white/40' : 'text-foreground/40'}`}>Auth</span>
+                    <span className={`text-[10px] font-semibold max-w-[100px] truncate ${isHero ? 'text-white/70' : 'text-foreground/70'}`}>{user.email}</span>
                   </div>
                   <button
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className={`p-2 rounded-full transition-all group disabled:opacity-50 disabled:cursor-not-allowed ${scrolled ? 'text-foreground/40 hover:text-red-400 hover:bg-red-400/10' : 'text-white/40 hover:text-red-400 hover:bg-white/10'}`}
+                    className={`p-2 rounded-full transition-all group disabled:opacity-50 disabled:cursor-not-allowed ${isHero ? 'text-white/40 hover:text-red-400 hover:bg-white/10' : 'text-foreground/40 hover:text-red-400 hover:bg-foreground/10'}`}
                     title="Logout"
                   >
-                    {isLoggingOut ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-red-400" />
-                    ) : (
-                      <LogOut className="w-4 h-4" />
-                    )}
+                    {isLoggingOut ? <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" /> : <LogOut className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={handleLogin}
-                  className={`flex items-center gap-2 px-4 py-2 border rounded-md text-xs font-bold transition-all ${scrolled ? 'bg-foreground/5 border-foreground/10 text-foreground/70 hover:bg-foreground/10 hover:text-foreground' : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:text-white'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                    isHero 
+                      ? "bg-white/10 border-white/20 text-white/90 hover:bg-white/20" 
+                      : "bg-foreground/5 border-foreground/10 text-foreground/80 hover:bg-foreground/10"
+                  }`}
                 >
-                  <LogIn className="w-4 h-4" />
+                  <LogIn className="w-3.5 h-3.5" />
                   Login
                 </button>
               )}
