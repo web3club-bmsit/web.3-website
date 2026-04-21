@@ -22,7 +22,7 @@ export default function UpcomingEventHome() {
   return (
     <section
       className={`relative w-full py-40 px-8 lg:px-16 flex items-center justify-center min-h-[900px] z-20 overflow-hidden transition-colors duration-500 ${
-        isDark ? "bg-[#08080c]" : "bg-gradient-to-br from-slate-100 via-background to-indigo-100"
+        isDark ? "bg-[#08080c]" : "bg-background"
       }`}
     >
       {/* Decorative glow blobs in light mode */}

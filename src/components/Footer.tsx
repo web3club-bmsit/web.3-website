@@ -23,7 +23,7 @@ export default function Footer() {
       className={`relative overflow-hidden transition-colors duration-500 ${
         isDark
           ? "bg-[#08080c] text-white"
-          : "bg-gradient-to-br from-indigo-50 via-violet-50 to-pink-50 text-slate-800"
+          : "bg-background text-slate-800"
       }`}
     >
       {/* Light mode decorative blobs */}
