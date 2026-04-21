@@ -2,27 +2,29 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { LogIn, LogOut, User as UserIcon, ShieldAlert, Loader2 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
-// ADD YOUR TABS HERE — just push an object to this array.
+// NAV TABS (Contact added here)
 // ─────────────────────────────────────────────────────────────
 const NAV_TABS = [
-  { label: "Home",   href: "/"   },
+  { label: "Home", href: "/" },
   { label: "Events", href: "/events" },
-  { label: "Teams",  href: "/teams"  },
+  { label: "Teams", href: "/teams" },
+  { label: "Contact", href: "/contact" }, // ✅ added
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [active, setWithActive] = useState("Home");
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  const pathname = usePathname(); // ✅ for active tab
   const supabase = createClient();
 
   useEffect(() => {
@@ -43,20 +45,23 @@ export default function Navbar() {
     };
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", currentUser.id)
-          .single();
-        setIsAdmin(profile?.role === "admin");
-      } else {
-        setIsAdmin(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        if (currentUser) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", currentUser.id)
+            .single();
+          setIsAdmin(profile?.role === "admin");
+        } else {
+          setIsAdmin(false);
+        }
       }
-    });
+    );
 
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -69,7 +74,6 @@ export default function Navbar() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=${window.location.pathname}`,
-        // Force account chooser on each login attempt
         queryParams: { prompt: "select_account" },
       },
     });
@@ -85,12 +89,17 @@ export default function Navbar() {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-black/80 backdrop-blur-md border-b border-green-500/10 shadow-lg" : ""
+          scrolled
+            ? "bg-black/80 backdrop-blur-md border-b border-green-500/10 shadow-lg"
+            : ""
         }`}
       >
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="font-mono text-green-400 font-bold text-sm tracking-wider">
+          <Link
+            href="/"
+            className="font-mono text-green-400 font-bold text-sm tracking-wider"
+          >
             {"{ club }"}
           </Link>
 
@@ -100,9 +109,8 @@ export default function Navbar() {
               <li key={tab.label}>
                 <Link
                   href={tab.href}
-                  onClick={() => setWithActive(tab.label)}
                   className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
-                    active === tab.label
+                    pathname === tab.href
                       ? "text-green-400 bg-green-400/10"
                       : "text-white/50 hover:text-white hover:bg-white/5"
                   }`}
@@ -111,6 +119,7 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+
             {isAdmin && (
               <li>
                 <Link
@@ -129,8 +138,12 @@ export default function Navbar() {
             {user ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] text-white/30 font-mono uppercase tracking-tighter">Authenticated</span>
-                  <span className="text-xs text-white/60 font-semibold max-w-[120px] truncate">{user.email}</span>
+                  <span className="text-[10px] text-white/30 font-mono uppercase tracking-tighter">
+                    Authenticated
+                  </span>
+                  <span className="text-xs text-white/60 font-semibold max-w-[120px] truncate">
+                    {user.email}
+                  </span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -155,15 +168,28 @@ export default function Navbar() {
               </button>
             )}
           </div>
+
           {/* Hamburger */}
           <button
-            className="md:hidden flex flex-col gap-1.5 p-1 bg-transparent border-none cursor-pointer"
+            className="md:hidden flex flex-col gap-1.5 p-1"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
           >
-            <span className={`block w-5 h-0.5 bg-green-400 rounded transition-all duration-300 ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
-            <span className={`block w-5 h-0.5 bg-green-400 rounded transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-5 h-0.5 bg-green-400 rounded transition-all duration-300 ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+            <span
+              className={`block w-5 h-0.5 bg-green-400 rounded transition-all duration-300 ${
+                menuOpen ? "translate-y-2 rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`block w-5 h-0.5 bg-green-400 rounded transition-all duration-300 ${
+                menuOpen ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`block w-5 h-0.5 bg-green-400 rounded transition-all duration-300 ${
+                menuOpen ? "-translate-y-2 -rotate-45" : ""
+              }`}
+            />
           </button>
         </div>
       </nav>
@@ -175,14 +201,17 @@ export default function Navbar() {
             <Link
               key={tab.label}
               href={tab.href}
-              onClick={() => { setWithActive(tab.label); setMenuOpen(false); }}
+              onClick={() => setMenuOpen(false)}
               className={`py-2 text-sm font-semibold border-b border-white/5 transition-colors ${
-                active === tab.label ? "text-green-400" : "text-white/50 hover:text-white"
+                pathname === tab.href
+                  ? "text-green-400"
+                  : "text-white/50 hover:text-white"
               }`}
             >
               {tab.label}
             </Link>
           ))}
+
           {isAdmin && (
             <Link
               href="/admin"
@@ -202,10 +231,15 @@ export default function Navbar() {
                     <UserIcon className="w-4 h-4 text-green-400" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-white/30 uppercase font-mono">Profile</span>
-                    <span className="text-xs text-white/70">{user.email}</span>
+                    <span className="text-[10px] text-white/30 uppercase font-mono">
+                      Profile
+                    </span>
+                    <span className="text-xs text-white/70">
+                      {user.email}
+                    </span>
                   </div>
                 </div>
+
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
