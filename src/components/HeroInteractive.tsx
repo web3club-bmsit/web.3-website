@@ -43,15 +43,15 @@ const DARK_PALETTE = {
 };
 
 const LIGHT_PALETTE = {
-  bg: 0xf0f4ff,            // soft blue-white
-  fog: 0xe8eeff,           // slightly deeper hue for fog
-  accent: 0x6366f1,        // indigo-500
-  fill: 0xec4899,          // pink-500
-  btcColor: 0xf59e0b,      // amber-400 - vibrant gold
-  solColor: 0x8b5cf6,      // violet-500
+  bg: 0xf1f5f9,            // matches globals.css --background
+  fog: 0xe2e8f0,
+  accent: 0x6366f1,        
+  fill: 0xec4899,          
+  btcColor: 0xf59e0b,      
+  solColor: 0x8b5cf6,      
   ambient: 0xccddff,
-  bgClass: "bg-[#f0f4ff]",
-  overlayGradient: "radial-gradient(ellipse at center,transparent 40%,rgba(240,244,255,0.80) 100%)",
+  bgClass: "bg-background",
+  overlayGradient: "radial-gradient(ellipse at center,transparent 40%,rgba(241,245,249,0.80) 100%)",
   textClass: "text-slate-800",
   subtextClass: "text-slate-500",
   headingGradient: "from-indigo-600 via-violet-600 to-pink-500",

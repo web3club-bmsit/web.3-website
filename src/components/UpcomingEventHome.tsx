@@ -21,8 +21,8 @@ export default function UpcomingEventHome() {
 
   return (
     <section
-      className={`relative w-full py-40 px-8 lg:px-16 flex items-center justify-center min-h-[900px] z-20 mt-24 overflow-hidden transition-colors duration-500 ${
-        isDark ? "bg-[#08080c]" : "bg-gradient-to-br from-indigo-50 via-white to-violet-50"
+      className={`relative w-full py-40 px-8 lg:px-16 flex items-center justify-center min-h-[900px] z-20 overflow-hidden transition-colors duration-500 ${
+        isDark ? "bg-[#08080c]" : "bg-gradient-to-br from-slate-100 via-background to-indigo-100"
       }`}
     >
       {/* Decorative glow blobs in light mode */}
@@ -70,13 +70,13 @@ export default function UpcomingEventHome() {
                   className={`flex flex-col justify-between p-0 overflow-hidden ${
                     isDark
                       ? "shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
-                      : "shadow-[0_30px_60px_rgba(99,102,241,0.15)] border border-indigo-100"
+                      : "shadow-[0_30px_60px_rgba(0,0,0,0.3)]"
                   }`}
                 >
                   <img
                     src="/placeholder-event.png"
                     alt="Event placeholder"
-                    className={`w-full h-36 object-cover border-b ${isDark ? "border-white/10" : "border-indigo-100"}`}
+                    className={`w-full h-36 object-cover border-b ${isDark ? "border-white/10" : "border-white/10"}`}
                   />
 
                   <div className="p-8 flex flex-col justify-between flex-1">
@@ -86,13 +86,13 @@ export default function UpcomingEventHome() {
                           className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-mono font-bold uppercase tracking-widest ${
                             isDark
                               ? "border-green-400/20 bg-green-400/5 text-green-400"
-                              : "border-indigo-300/40 bg-indigo-50 text-indigo-600"
+                              : "border-indigo-400/30 bg-indigo-500/10 text-indigo-300"
                           }`}
                         >
                           {isUpcoming ? (
                             <>
                               <span
-                                className={`w-2 h-2 rounded-full animate-ping ${isDark ? "bg-green-400" : "bg-indigo-500"}`}
+                                className={`w-2 h-2 rounded-full animate-ping ${isDark ? "bg-green-400" : "bg-indigo-400"}`}
                               />
                               Upcoming Event
                             </>
@@ -100,15 +100,15 @@ export default function UpcomingEventHome() {
                             "Past Event"
                           )}
                         </div>
-                        <span className={`font-mono text-xs ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                        <span className={`font-mono text-xs ${isDark ? "text-white/40" : "text-white/40"}`}>
                           {event.date}
                         </span>
                       </div>
 
-                      <h2 className={`text-3xl font-black leading-tight mb-2 ${isDark ? "text-white" : "text-slate-800"}`}>
+                      <h2 className={`text-3xl font-black leading-tight mb-2 ${isDark ? "text-white" : "text-white"}`}>
                         {event.title}
                       </h2>
-                      <p className={`text-sm line-clamp-2 ${isDark ? "text-white/50" : "text-slate-500"}`}>
+                      <p className={`text-sm line-clamp-2 ${isDark ? "text-white/50" : "text-white/50"}`}>
                         {event.description}
                       </p>
                     </div>
@@ -120,7 +120,7 @@ export default function UpcomingEventHome() {
                           className={`px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center gap-2 group ${
                             isDark
                               ? "bg-green-400 text-black hover:bg-green-300"
-                              : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-[0_4px_14px_rgba(99,102,241,0.4)]"
+                              : "bg-indigo-500 text-white hover:bg-indigo-400 shadow-[0_4px_14px_rgba(99,102,241,0.4)]"
                           }`}
                         >
                           Register for the event <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -130,7 +130,7 @@ export default function UpcomingEventHome() {
                           className={`px-6 py-3 w-full border font-bold rounded-lg transition-all flex items-center justify-center ${
                             isDark
                               ? "border-white/10 text-white hover:bg-white/5"
-                              : "border-indigo-200 text-indigo-600 hover:bg-indigo-50"
+                              : "border-white/15 text-white/80 hover:bg-white/10"
                           }`}
                         >
                           Explore all events
@@ -145,7 +145,7 @@ export default function UpcomingEventHome() {
                           className={`px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center ${
                             isDark
                               ? "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
-                              : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+                              : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                           }`}
                         >
                           Read Recap
