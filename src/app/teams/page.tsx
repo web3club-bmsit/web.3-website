@@ -1,7 +1,10 @@
 import Navbar from "../components/navbar";
 import TeamGrid from "@/components/TeamGrid";
+import { getTeamMembers } from "@/app/actions/admin";
 
-export default function TeamsPage() {
+export default async function TeamsPage() {
+  const members = await getTeamMembers();
+
   return (
     <main className="min-h-screen bg-black text-white relative overflow-hidden pt-24 pb-12">
       {/* background glow */}
@@ -10,7 +13,7 @@ export default function TeamsPage() {
       <Navbar />
       
       <div className="relative z-10">
-        <TeamGrid />
+        <TeamGrid members={members} />
       </div>
     </main>
   );

@@ -23,7 +23,7 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);

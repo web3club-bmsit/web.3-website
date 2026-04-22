@@ -1,7 +1,7 @@
 "use client";
 import MemberCard from "./MemberCard";
-import { teamMembers } from "@/data/team";
 import { useEffect, useRef, useState, useCallback } from "react";
+import type { TeamMemberRow } from "@/app/actions/admin";
 function chunkArray<T>(arr: T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
     arr.slice(i * size, i * size + size)
@@ -35,8 +35,8 @@ type Particle = {
 };
 
 
-export default function TeamGrid() {
-  const chunkedRows = chunkArray(teamMembers, 3);
+export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
+  const chunkedRows = chunkArray(members, 3);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [glitching, setGlitching] = useState(false);
   const glitchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -301,7 +301,7 @@ draw();
             letterSpacing: "0.1em",
           }}>
             {Array.from({ length: 2 }, () =>
-              `◈ PROTOCOL_v3.1.4 ◈ NODES_ACTIVE: ${teamMembers.length.toString().padStart(2,"0")} ◈ CHAIN_STATUS: NOMINAL ◈ UPTIME: 99.97% ◈ BLOCK_HEIGHT: 8,421,337 ◈ LATENCY: 12ms ◈ SYNC: COMPLETE ◈ CONTRIBUTORS: VERIFIED ◈ `
+              `◈ PROTOCOL_v3.1.4 ◈ NODES_ACTIVE: ${members.length.toString().padStart(2,"0")} ◈ CHAIN_STATUS: NOMINAL ◈ UPTIME: 99.97% ◈ BLOCK_HEIGHT: 8,421,337 ◈ LATENCY: 12ms ◈ SYNC: COMPLETE ◈ CONTRIBUTORS: VERIFIED ◈ `
             ).join("")}
           </div>
         </div>
@@ -365,7 +365,7 @@ draw();
             animation: "fadeUp 0.8s 0.9s cubic-bezier(.22,1,.36,1) both, nodesBright 3s 1.7s ease-in-out infinite",
             textShadow: "0 0 12px rgba(205,239,51,0.3)",
           }}>
-            {teamMembers.length.toString().padStart(2, "0")} NODES ACTIVE
+            {members.length.toString().padStart(2, "0")} NODES ACTIVE
           </p>
 
           <div style={{
@@ -381,7 +381,6 @@ draw();
             <RevealRow
               key={rowIdx}
               row={row}
-              rowIdx={rowIdx}
               rowIdx={rowIdx}
             />
           ))}
@@ -429,7 +428,7 @@ function RevealRow({
   row,
   rowIdx,
 }: {
-  row: typeof teamMembers;
+  row: TeamMemberRow[];
   rowIdx: number;
 }) {
   const { ref, inView } = useInView(0.12);
@@ -467,13 +466,19 @@ function RevealRow({
 function MemberCardWrapper({
   member,
 }: {
-  member: typeof teamMembers[number];
+  member: TeamMemberRow;
 }) {
   return (
     <div
       style={{ position: "relative" }}
     >
-      <MemberCard {...member} />
+      <MemberCard 
+        name={member.name}
+        role={`${member.role} | ${member.department}`}
+        description={member.description || ""}
+        image={member.image_url || ""}
+        socials={member.socials}
+      />
     </div>
   );
 }

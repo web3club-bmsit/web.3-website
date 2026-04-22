@@ -2,9 +2,33 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
-import { EVENTS, HackathonEvent, EventMeta } from "@/data/events";
+import { EventMeta } from "@/data/events";
 import HackathonCard from "./hackathon/hackathonCard";
 import RegistrationTerminal from "@/components/RegistrationTerminal";
+import { getPublicEvents, type EventRow } from "@/app/actions/admin";
+
+// ── Map a Supabase EventRow to the shape HackathonCard expects ──
+
+function toHackathonEvent(row: EventRow) {
+  return {
+    id: row.id,
+    title: row.title,
+    subtitle: row.subtitle,
+    date: row.date,
+    startDate: row.start_date,
+    location: row.location,
+    prize: row.prize,
+    tags: row.tags,
+    teamMin: row.team_min,
+    teamMax: row.team_max,
+    description: row.description,
+    chain: row.chain ?? undefined,
+    sponsors: row.sponsors,
+    status: row.status,
+    agenda: [],           // agenda not stored in DB yet
+    imageUrl: row.image_url ?? undefined,
+  };
+}
 
 // ─────────────────────────────────────────────────────────────
 // Events section — vertical blockchain timeline layout
@@ -12,7 +36,9 @@ import RegistrationTerminal from "@/components/RegistrationTerminal";
 
 export default function Events() {
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
-  const [modalEvent, setModalEvent] = useState<EventMeta | null>(null);
+  const [modalEvent, setModalEvent] = useState<(EventMeta & { id: string }) | null>(null);
+  const [allEvents, setAllEvents] = useState<ReturnType<typeof toHackathonEvent>[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -20,10 +46,20 @@ export default function Events() {
 
   const now = useMemo(() => Date.now(), []);
 
+  // Fetch events from Supabase
+  useEffect(() => {
+    const load = async () => {
+      const rows = await getPublicEvents();
+      setAllEvents(rows.map(toHackathonEvent));
+      setLoaded(true);
+    };
+    load();
+  }, []);
+
   const { upcoming, past } = useMemo(() => {
-    const up: HackathonEvent[] = [];
-    const pa: HackathonEvent[] = [];
-    EVENTS.forEach((e) => {
+    const up: ReturnType<typeof toHackathonEvent>[] = [];
+    const pa: ReturnType<typeof toHackathonEvent>[] = [];
+    allEvents.forEach((e) => {
       if (new Date(e.startDate).getTime() > now) up.push(e);
       else pa.push(e);
     });
@@ -36,7 +72,7 @@ export default function Events() {
         new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
     );
     return { upcoming: up, past: pa };
-  }, [now]);
+  }, [now, allEvents]);
 
   const activeEvents = activeTab === "upcoming" ? upcoming : past;
   const isPast = activeTab === "past";
@@ -133,71 +169,81 @@ export default function Events() {
             </svg>
           )}
 
+          {/* Loading state */}
+          {!loaded && (
+            <div className="text-center py-20">
+              <div className="inline-block w-6 h-6 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin" />
+            </div>
+          )}
+
           {/* Event rows with AnimatePresence for tab switch */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: activeTab === "upcoming" ? -20 : 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: activeTab === "upcoming" ? 20 : -20 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="flex flex-col gap-12 md:gap-16"
-            >
-              {activeEvents.length > 0 ? (
-                activeEvents.map((event, i) => (
-                  <div
-                    key={event.id}
-                    className="grid grid-cols-[24px_1fr] md:grid-cols-[1fr_48px_1fr] items-start"
-                  >
-                    {/* Card */}
+          {loaded && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, x: activeTab === "upcoming" ? -20 : 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: activeTab === "upcoming" ? 20 : -20 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="flex flex-col gap-12 md:gap-16"
+              >
+                {activeEvents.length > 0 ? (
+                  activeEvents.map((event, i) => (
                     <div
-                      className={
-                        i % 2 === 0
-                          ? "col-start-2 md:col-start-1 row-start-1"
-                          : "col-start-2 md:col-start-3 row-start-1"
-                      }
+                      key={event.id}
+                      className="grid grid-cols-[24px_1fr] md:grid-cols-[1fr_48px_1fr] items-start"
                     >
-                      <HackathonCard
-                        event={event}
-                        onRegister={setModalEvent}
-                        isPast={isPast}
-                      />
-                    </div>
-
-                    {/* Center node — pulsing dot + connector */}
-                    <div className="col-start-1 md:col-start-2 row-start-1 flex flex-col items-center relative pt-8">
-                      {/* Pulsing ring — simulates block confirmation */}
-                      <span className="relative flex h-3 w-3 z-10">
-                        <span className="absolute inline-flex h-full w-full rounded-full bg-green-400/40 animate-ping" />
-                        <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400/80 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-                      </span>
-
-                      {/* Horizontal connector — desktop only */}
+                      {/* Card */}
                       <div
-                        className={`hidden md:block absolute top-[38px] h-px ${
+                        className={
                           i % 2 === 0
-                            ? "right-[50%] left-[-8px] bg-gradient-to-r from-transparent to-green-400/25"
-                            : "left-[50%] right-[-8px] bg-gradient-to-l from-transparent to-green-400/25"
-                        }`}
-                      />
+                            ? "col-start-2 md:col-start-1 row-start-1"
+                            : "col-start-2 md:col-start-3 row-start-1"
+                        }
+                      >
+                        <HackathonCard
+                          event={event as any}
+                          onRegister={(e) => setModalEvent({ ...e, id: event.id })}
+                          isPast={isPast}
+                        />
+                      </div>
+
+                      {/* Center node — pulsing dot + connector */}
+                      <div className="col-start-1 md:col-start-2 row-start-1 flex flex-col items-center relative pt-8">
+                        {/* Pulsing ring — simulates block confirmation */}
+                        <span className="relative flex h-3 w-3 z-10">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-green-400/40 animate-ping" />
+                          <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400/80 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                        </span>
+
+                        {/* Horizontal connector — desktop only */}
+                        <div
+                          className={`hidden md:block absolute top-[38px] h-px ${
+                            i % 2 === 0
+                              ? "right-[50%] left-[-8px] bg-gradient-to-r from-transparent to-green-400/25"
+                              : "left-[50%] right-[-8px] bg-gradient-to-l from-transparent to-green-400/25"
+                          }`}
+                        />
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-20">
+                    <p className="font-mono text-sm text-white/20">
+                      No {activeTab} events.
+                    </p>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-20">
-                  <p className="font-mono text-sm text-white/20">
-                    No {activeTab} events.
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
       </section>
 
       {/* ── Registration modal ───────────────────────────────── */}
       {modalEvent && (
         <RegistrationTerminal
+          eventId={modalEvent.id}
           eventName={modalEvent.title}
           onClose={() => setModalEvent(null)}
         />

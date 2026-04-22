@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { registerForEvent } from "@/app/actions/register";
+import { type RegistrationFieldRow } from "@/app/actions/admin";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { LogIn } from "lucide-react";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 type Props = {
+  eventId?: string;       // Optional — if provided, loads custom fields from DB
   eventName: string;
   onClose: () => void;
 };
@@ -16,7 +18,12 @@ type Line =
   | { type: "output" | "error" | "success" | "system" | "highlight" | "ascii"; text: string }
   | { type: "input"; text: string };
 
-const STEPS = [
+type Step = {
+  field: string;
+  prompt: string;
+};
+
+const DEFAULT_STEPS: Step[] = [
   { field: "name", prompt: "> Enter your name" },
   { field: "college", prompt: "> Enter your college (or type none)" },
   { field: "year", prompt: "> Enter your graduation year (or type none)" },
@@ -39,50 +46,89 @@ const lineColor: Record<string, string> = {
   ascii: "text-green-400/60 font-bold leading-none mb-2"
 };
 
-export default function RegistrationTerminal({ eventName, onClose }: Props) {
+export default function RegistrationTerminal({ eventId, eventName, onClose }: Props) {
   const [lines, setLines] = useState<Line[]>([]);
   const [input, setInput] = useState("");
   const [stepIdx, setStepIdx] = useState(0);
   const [data, setData] = useState<Record<string, string>>({});
-  const [phase, setPhase] = useState<"form" | "confirm" | "submitting" | "done">("form");
+  const [phase, setPhase] = useState<"loading" | "form" | "confirm" | "submitting" | "done">("loading");
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(-1);
   const [turnstileToken, setTurnstileToken] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [steps, setSteps] = useState<Step[]>(DEFAULT_STEPS);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const push = useCallback((line: Line) => setLines((l) => [...l, line]), []);
 
   useEffect(() => {
     let active = true;
 
-    const checkUser = async () => {
+    const loadFieldsAndBoot = async () => {
+      console.log("[DEBUG] loadFieldsAndBoot START");
+      // Load custom registration fields if eventId is provided
+      let loadedSteps = DEFAULT_STEPS;
+      if (eventId) {
+        try {
+          const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/registration_fields?event_id=eq.${eventId}&select=*&order=sort_order.asc`;
+          const res = await fetch(url, {
+            headers: {
+              apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+            }
+          });
+          
+          if (!res.ok) {
+            console.error("Failed to fetch fields, status:", res.status);
+          } else {
+            const data = await res.json();
+            console.log("[DEBUG] Fetch fields complete.", data);
+            if (data && data.length > 0) {
+              loadedSteps = data.map((f: any) => ({
+                field: f.field_name,
+                prompt: `> ${f.prompt}`,
+              }));
+            }
+          }
+        } catch (e) {
+          console.error("Exception loading registration fields:", e);
+        }
+      }
+      if (active) setSteps(loadedSteps);
+
+      // Check auth
       let fetchedUser: User | null = null;
       try {
+        console.log("[DEBUG] Fetching user...");
         const { data: { user } } = await supabase.auth.getUser();
+        console.log("[DEBUG] Fetch user complete.", { user });
         fetchedUser = user ?? null;
         if (active) setUser(fetchedUser);
       } catch (e) {
         console.error('Auth check error:', e);
       } finally {
-        if (active) setAuthLoading(false);
+        console.log("[DEBUG] Finally block active:", active);
+        if (active) {
+          setAuthLoading(false);
+          runBootSequence(fetchedUser, loadedSteps);
+        }
       }
-      if (active) runBootSequence(fetchedUser);
     };
 
-    const runBootSequence = (currentUser: User | null) => {
+    const runBootSequence = (currentUser: User | null, currentSteps: Step[]) => {
       setLines([]);
       setStepIdx(0);
       setData({});
       setPhase("form");
       setInput("");
 
-      const boot = [
+      const boot: Line[] = [
         { type: "system" as const, text: "Sovereign Network Terminal v1.0.0 — Event Registration Shell" },
         { type: "ascii" as const, text: `
 ██╗    ██╗███████╗██████╗ ██████╗ 
@@ -125,19 +171,19 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
       if (currentUser) {
         setTimeout(() => {
           if (active) {
-            push({ type: "output", text: `[Step 1/${STEPS.length}] ${STEPS[0].prompt}:` });
+            push({ type: "output", text: `[Step 1/${currentSteps.length}] ${currentSteps[0].prompt}:` });
             inputRef.current?.focus();
           }
         }, delay + 200);
       }
     };
 
-    checkUser();
+    loadFieldsAndBoot();
 
     return () => {
       active = false;
     };
-  }, [push, eventName]);
+  }, [push, eventName, eventId]);
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
@@ -181,7 +227,7 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
         setData({});
         setPhase("form");
         push({ type: "system", text: "flushing buffers... restarted." });
-        push({ type: "output", text: `[Step 1/${STEPS.length}] ${STEPS[0].prompt}:` });
+        push({ type: "output", text: `[Step 1/${steps.length}] ${steps[0].prompt}:` });
         return;
       }
       if (cmd === "status") {
@@ -205,11 +251,12 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
           push({ type: "system", text: "Transmitting payload..." });
 
           const payload = {
-            name: data.name,
+            name: data.name || "",
             email: user?.email || "",
-            college: data.college,
-            year: data.year,
+            college: data.college || "",
+            year: data.year || "",
             event: eventName,
+            customFields: data,
           };
 
           const res = await registerForEvent(payload, turnstileToken);
@@ -223,13 +270,15 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
             push({ type: "error", text: `✗ TRANSMISSION FAILED: ${res.error}` });
             setPhase("confirm");
             push({ type: "output", text: "Retry submission? [yes / no]" });
+            turnstileRef.current?.reset();
+            setTurnstileToken("");
           }
         } else if (["no", "n"].includes(cmd.toLowerCase())) {
           setStepIdx(0);
           setData({});
           setPhase("form");
           push({ type: "output", text: "Execution aborted. Restarting..." });
-          push({ type: "output", text: `[Step 1/${STEPS.length}] ${STEPS[0].prompt}:` });
+          push({ type: "output", text: `[Step 1/${steps.length}] ${steps[0].prompt}:` });
         } else {
           push({ type: "error", text: "Unrecognized instruction. Expected 'yes' or 'no'." });
         }
@@ -245,11 +294,11 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
         return;
       }
 
-      const step = STEPS[stepIdx];
+      const step = steps[stepIdx];
       const err = validate(step.field, cmd);
       if (err) {
         push({ type: "error", text: `✗ ${err}` });
-        push({ type: "output", text: `[Step ${stepIdx + 1}/${STEPS.length}] ${step.prompt}:` });
+        push({ type: "output", text: `[Step ${stepIdx + 1}/${steps.length}] ${step.prompt}:` });
         return;
       }
 
@@ -258,23 +307,23 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
       push({ type: "success", text: "  ✓ Saved to buffer." });
 
       const next = stepIdx + 1;
-      if (next < STEPS.length) {
+      if (next < steps.length) {
         setStepIdx(next);
         push({ type: "output", text: "" });
-        push({ type: "output", text: `[Step ${next + 1}/${STEPS.length}] ${STEPS[next].prompt}:` });
+        push({ type: "output", text: `[Step ${next + 1}/${steps.length}] ${steps[next].prompt}:` });
       } else {
         setPhase("confirm");
         push({ type: "output", text: "" });
         push({ type: "output", text: "─── PAYLOAD READY FOR TRANSMISSION ───" });
         push({ type: "output", text: `  EVENT    : ${eventName}` });
-        STEPS.forEach((s) => {
+        steps.forEach((s) => {
           push({ type: "output", text: `  ${s.field.toUpperCase().padEnd(8, " ")} : ${newData[s.field]}` });
         });
         push({ type: "output", text: "──────────────────────────────────────" });
         push({ type: "output", text: "Authorize transmission? [yes / no]" });
       }
     },
-    [data, onClose, phase, push, stepIdx, turnstileToken]
+    [data, onClose, phase, push, stepIdx, turnstileToken, steps]
   );
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -337,6 +386,7 @@ export default function RegistrationTerminal({ eventName, onClose }: Props) {
         {/* Turnstile Widget (hidden but active) */}
         <div className="hidden">
           <Turnstile
+            ref={turnstileRef}
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
             onSuccess={(token) => setTurnstileToken(token)}
             options={{

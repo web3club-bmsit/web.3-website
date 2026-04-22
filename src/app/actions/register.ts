@@ -3,7 +3,14 @@
 import { createClient } from "@/utils/supabase/server";
 
 export async function registerForEvent(
-  data: { name: string; email: string; college: string; year: string; event: string },
+  data: {
+    name: string;
+    email: string;
+    college: string;
+    year: string;
+    event: string;
+    customFields?: Record<string, string>;
+  },
   turnstileToken: string
 ) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
@@ -42,6 +49,7 @@ export async function registerForEvent(
         college: data.college,
         year: data.year,
         event: data.event,
+        custom_fields: data.customFields || {},
       },
     ]);
 
@@ -50,12 +58,12 @@ export async function registerForEvent(
         return { success: false, error: "Email is already registered for this event." };
       }
       console.error("Supabase Database Insert Error: ", error);
-      return { success: false, error: "A database error occurred. Try again later." };
+      return { success: false, error: `Database error: ${error.message || error.details || "Unknown error"}` };
     }
 
     return { success: true };
   } catch (err: any) {
     console.error("Registration Exception: ", err);
-    return { success: false, error: "An unexpected error occurred during registration." };
+    return { success: false, error: `Server exception: ${err.message}` };
   }
 }
