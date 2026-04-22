@@ -1,13 +1,13 @@
 import Navbar from "../components/navbar";
-import Events from "../components/events";
+import TeamGrid from "@/components/TeamGrid";
 import Footer from "@/components/Footer";
 
-export default function EventsPage() {
+export default function TeamPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-20">
-        <Events />
+        <TeamGrid />
       </div>
       <Footer />
     </main>

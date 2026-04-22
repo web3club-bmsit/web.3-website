@@ -1,13 +1,13 @@
 import Navbar from "../components/navbar";
-import Events from "../components/events";
+import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
 
-export default function EventsPage() {
+export default function AboutPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="pt-20">
-        <Events />
+        <AboutSection />
       </div>
       <Footer />
     </main>
