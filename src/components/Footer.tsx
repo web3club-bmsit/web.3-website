@@ -29,10 +29,10 @@ export default function Footer() {
       {/* Light mode decorative blobs */}
       {!isDark && (
         <>
-          <div className="absolute top-0 left-0 w-[600px] h-[300px] bg-indigo-200/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-pink-200/30 rounded-full blur-3xl translate-x-1/4 translate-y-1/4 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-[600px] h-[300px] bg-green-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-slate-300/20 rounded-full blur-3xl translate-x-1/4 translate-y-1/4 pointer-events-none" />
           {/* Divider line at top */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-300 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-400/30 to-transparent" />
         </>
       )}
       {isDark && (
@@ -59,7 +59,7 @@ export default function Footer() {
               className={`text-[10px] font-semibold uppercase tracking-[0.25em] transition-colors duration-200 ${
                 isDark
                   ? "text-white/40 hover:text-green-400"
-                  : "text-slate-400 hover:text-indigo-600"
+                  : "text-slate-400 hover:text-green-600"
               }`}
             >
               {link.label}
@@ -77,7 +77,7 @@ export default function Footer() {
               line.accent
                 ? isDark
                   ? "text-green-400"
-                  : "bg-gradient-to-r from-indigo-600 via-violet-500 to-pink-500 bg-clip-text text-transparent"
+                  : "bg-gradient-to-r from-green-600 via-emerald-500 to-green-400 bg-clip-text text-transparent"
                 : isDark
                   ? "text-white"
                   : "text-slate-800"
@@ -110,8 +110,8 @@ export default function Footer() {
         {/* Light mode: small accent dot for visual flair */}
         {!isDark && (
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-            <span className="text-[9px] font-mono uppercase tracking-widest text-indigo-400">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-[9px] font-mono uppercase tracking-widest text-green-600">
               Web3 BMSIT
             </span>
           </div>
