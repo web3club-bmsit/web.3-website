@@ -1,7 +1,9 @@
 import Navbar from "./components/navbar";
 import Hero from "./components/Hero";
 import Events from "./components/events";
-
+import TeamGrid from "@/components/TeamGrid";
+import UpcomingEventHome from "@/components/UpcomingEventHome";
+import HeroSection from "@/components/HeroSection";
 // ─────────────────────────────────────────────────────────────
 // Add your section imports here as teammates build them:
 //   import Team from "./components/Team";
@@ -10,7 +12,7 @@ import Events from "./components/events";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#08080c] text-white">
+    <main className="min-h-screen bg-[#08080c] text-white relative overflow-hidden">
       <Navbar />
 
       <Hero />

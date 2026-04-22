@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { EVENTS, HackathonEvent, EventMeta } from "@/data/events";
 import HackathonCard from "./hackathon/hackathonCard";
-import TerminalModal from "./hackathon/terminalModal";
+import RegistrationTerminal from "@/components/RegistrationTerminal";
 
 // ─────────────────────────────────────────────────────────────
 // Events section — vertical blockchain timeline layout
@@ -196,10 +196,12 @@ export default function Events() {
       </section>
 
       {/* ── Registration modal ───────────────────────────────── */}
-      <TerminalModal
-        event={modalEvent}
-        onClose={() => setModalEvent(null)}
-      />
+      {modalEvent && (
+        <RegistrationTerminal
+          eventName={modalEvent.title}
+          onClose={() => setModalEvent(null)}
+        />
+      )}
     </>
   );
 }
