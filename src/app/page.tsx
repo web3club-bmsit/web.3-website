@@ -1,4 +1,5 @@
 import Navbar from "./components/navbar";
+import Hero from "./components/Hero";
 import Events from "./components/events";
 import TeamGrid from "@/components/TeamGrid";
 import UpcomingEventHome from "@/components/UpcomingEventHome";
@@ -10,12 +11,17 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground relative overflow-hidden">
       <Navbar />
 
-      <HeroInteractive />
-      
-      <div className="relative z-10 w-full bg-background">
-        <UpcomingEventHome />
-        <Footer />
-      </div>
+      <Hero />
+
+      {/* Events section */}
+      <Events />
+
+
+      {/*
+        Add more sections below as they are built:
+        <Team />
+        <Blog />
+      */}
     </main>
   );
 }
