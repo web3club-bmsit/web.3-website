@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { LogIn, LogOut, User as UserIcon, ShieldAlert, Loader2, Sun, Moon } from "lucide-react";
@@ -10,7 +11,7 @@ import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 
 // ─────────────────────────────────────────────────────────────
-// ADD YOUR TABS HERE — just push an object to this array.
+// NAV TABS (Contact added here)
 // ─────────────────────────────────────────────────────────────
 const NAV_TABS = [
   { label: "Home", href: "/" },
@@ -23,7 +24,6 @@ const NAV_TABS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [active, setWithActive] = useState("Home");
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -53,20 +53,23 @@ export default function Navbar() {
     };
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", currentUser.id)
-          .single();
-        setIsAdmin(profile?.role === "admin");
-      } else {
-        setIsAdmin(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        if (currentUser) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", currentUser.id)
+            .single();
+          setIsAdmin(profile?.role === "admin");
+        } else {
+          setIsAdmin(false);
+        }
       }
-    });
+    );
 
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -153,6 +156,7 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+
             {isAdmin && (
               <li>
                 <Link
@@ -244,6 +248,7 @@ export default function Navbar() {
               {tab.label}
             </Link>
           ))}
+
           {isAdmin && (
             <Link
               href="/admin"
@@ -267,6 +272,7 @@ export default function Navbar() {
                     <span className={`text-xs truncate max-w-[200px] ${resolvedTheme === 'dark' ? 'text-white/70' : 'text-black/70'}`}>{user.email}</span>
                   </div>
                 </div>
+
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}

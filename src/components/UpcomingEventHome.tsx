@@ -28,8 +28,8 @@ export default function UpcomingEventHome() {
       {/* Decorative glow blobs in light mode */}
       {!isDark && (
         <>
-          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-indigo-200/40 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-violet-200/40 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-green-200/30 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-slate-300/30 rounded-full blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -41,7 +41,7 @@ export default function UpcomingEventHome() {
             className={`text-5xl lg:text-7xl font-black mb-6 ${
               isDark
                 ? "text-white"
-                : "bg-gradient-to-br from-indigo-600 via-violet-600 to-pink-500 bg-clip-text text-transparent"
+                : "bg-gradient-to-br from-green-600 via-emerald-500 to-green-400 bg-clip-text text-transparent"
             }`}
           >
             Flagship<br />Events
@@ -86,13 +86,13 @@ export default function UpcomingEventHome() {
                           className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-mono font-bold uppercase tracking-widest ${
                             isDark
                               ? "border-green-400/20 bg-green-400/5 text-green-400"
-                              : "border-indigo-400/30 bg-indigo-500/10 text-indigo-300"
+                              : "border-green-400/30 bg-green-500/10 text-green-300"
                           }`}
                         >
                           {isUpcoming ? (
                             <>
                               <span
-                                className={`w-2 h-2 rounded-full animate-ping ${isDark ? "bg-green-400" : "bg-indigo-400"}`}
+                                className={`w-2 h-2 rounded-full animate-ping ${isDark ? "bg-green-400" : "bg-green-400"}`}
                               />
                               Upcoming Event
                             </>
@@ -120,7 +120,7 @@ export default function UpcomingEventHome() {
                           className={`px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center gap-2 group ${
                             isDark
                               ? "bg-green-400 text-black hover:bg-green-300"
-                              : "bg-indigo-500 text-white hover:bg-indigo-400 shadow-[0_4px_14px_rgba(99,102,241,0.4)]"
+                              : "bg-green-500 text-white hover:bg-green-400 shadow-[0_4px_14px_rgba(34,197,94,0.4)]"
                           }`}
                         >
                           Register for the event <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

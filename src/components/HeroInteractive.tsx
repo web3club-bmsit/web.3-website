@@ -45,19 +45,19 @@ const DARK_PALETTE = {
 const LIGHT_PALETTE = {
   bg: 0xf1f5f9,            // matches globals.css --background
   fog: 0xe2e8f0,
-  accent: 0x6366f1,        
-  fill: 0xec4899,          
-  btcColor: 0xf59e0b,      
-  solColor: 0x8b5cf6,      
-  ambient: 0xccddff,
+  accent: 0x22c55e,        // green-500
+  fill: 0x64748b,          // slate-500 (grey)
+  btcColor: 0xf59e0b,      // amber-500 (gold stays)
+  solColor: 0x16a34a,      // green-600
+  ambient: 0xd1d5db,       // grey-300
   bgClass: "bg-background",
   overlayGradient: "radial-gradient(ellipse at center,transparent 40%,rgba(241,245,249,0.80) 100%)",
   textClass: "text-slate-800",
   subtextClass: "text-slate-500",
-  headingGradient: "from-indigo-600 via-violet-600 to-pink-500",
+  headingGradient: "from-green-600 via-emerald-500 to-green-400",
   scrollHintClass: "text-slate-400",
-  btnClass: "bg-indigo-600 text-white shadow-[0_0_20px_rgba(99,102,241,0.35)] ring-1 ring-indigo-500/20",
-  progressClass: "bg-indigo-500",
+  btnClass: "bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.35)] ring-1 ring-green-400/20",
+  progressClass: "bg-green-500",
 };
 
 export default function Hero() {

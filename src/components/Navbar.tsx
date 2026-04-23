@@ -2,10 +2,13 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -19,19 +22,38 @@ export default function Navbar() {
 
       <ul className="hidden md:flex items-center gap-8 font-bold text-sm uppercase tracking-widest pointer-events-auto">
         <li>
-          <Link href="#about" className="hover:text-accent transition-colors">About</Link>
+          <Link href="/#about" className="hover:text-accent transition-colors">
+            About
+          </Link>
         </li>
         <li>
-          <Link href="#events" className="hover:text-accent transition-colors">Events</Link>
+          <Link href="/#events" className="hover:text-accent transition-colors">
+            Events
+          </Link>
         </li>
         <li>
-          <Link href="#team" className="hover:text-accent transition-colors">Team</Link>
+          <Link href="/#team" className="hover:text-accent transition-colors">
+            Team
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/contact"
+            className={`hover:text-accent transition-colors ${
+              pathname === "/contact" ? "text-accent" : ""
+            }`}
+          >
+            Contact
+          </Link>
         </li>
       </ul>
 
-      <button className="pointer-events-auto hidden md:block px-6 py-2 border-2 border-background rounded-full font-bold text-sm uppercase tracking-widest hover:bg-background hover:text-foreground transition-all">
+      <Link
+        href="/contact"
+        className="pointer-events-auto hidden md:block px-6 py-2 border-2 border-background rounded-full font-bold text-sm uppercase tracking-widest hover:bg-background hover:text-foreground transition-all"
+      >
         Connect
-      </button>
+      </Link>
     </motion.nav>
   );
 }

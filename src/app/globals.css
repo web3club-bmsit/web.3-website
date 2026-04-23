@@ -6,7 +6,7 @@
 :root {
   --background: #f1f5f9;
   --foreground: #08080c;
-  --accent: #059669; /* Emerald 600 for light mode */
+  --accent: #22c55e; /* Green-500 for light mode */
   --card-bg: rgba(8, 8, 12, 0.04);
   --border: rgba(8, 8, 12, 0.08);
   --nav-surface: rgba(255, 255, 255, 0.75);
