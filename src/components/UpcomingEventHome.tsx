@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { EVENTS } from "@/data/events";
 import RegistrationTerminal from "./RegistrationTerminal";
@@ -11,8 +11,14 @@ import { useTheme } from "next-themes";
 export default function UpcomingEventHome() {
   const [showTerminal, setShowTerminal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string>("");
+  const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme !== "light";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = !mounted || resolvedTheme !== "light";
 
   const handleRegister = (eventName: string) => {
     setSelectedEvent(eventName);
