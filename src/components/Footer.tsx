@@ -75,12 +75,8 @@ export default function Footer() {
             key={line.text}
             className={`m-0 leading-[0.9] font-black uppercase tracking-tighter transition-colors duration-500 ${
               line.accent
-                ? isDark
-                  ? "text-green-400"
-                  : "bg-gradient-to-r from-green-600 via-emerald-500 to-green-400 bg-clip-text text-transparent"
-                : isDark
-                  ? "text-white"
-                  : "text-slate-800"
+                ? "text-accent"
+                : "text-foreground"
             }`}
             style={{ fontSize: "clamp(4rem, 12vw, 10rem)" }}
           >
@@ -116,6 +112,11 @@ export default function Footer() {
             </span>
           </div>
         )}
+      </div>
+
+      {/* ── Attribution ── */}
+      <div className="w-full text-center pb-6 text-[10px] text-foreground/40 font-mono tracking-widest uppercase relative z-10">
+        Icons made from <a href="https://www.onlinewebfonts.com/icon" target="_blank" rel="noreferrer" className="underline hover:text-foreground">svg icons</a> is licensed by CC BY 4.0
       </div>
     </footer>
   );

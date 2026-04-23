@@ -23,7 +23,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white pt-24 px-6 md:px-12 pb-16 relative overflow-hidden">
+    <main className="min-h-screen bg-background text-foreground pt-24 px-6 md:px-12 pb-16 relative overflow-hidden">
       {/* background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.05),transparent_50%)]" />
 

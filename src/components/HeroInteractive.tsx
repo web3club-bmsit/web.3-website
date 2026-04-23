@@ -491,7 +491,7 @@ export default function Hero() {
                 <div className="flex flex-col items-center">
                   <h1
                     id={t.id}
-                    className={`text-[clamp(2.4rem,10vw,8rem)] font-black text-center uppercase tracking-tighter leading-[0.9] bg-gradient-to-br ${PAL.headingGradient} bg-clip-text text-transparent`}
+                    className={`text-[clamp(2.4rem,10vw,8rem)] font-black text-center uppercase tracking-tighter leading-[0.9] text-foreground`}
                   />
                   <p
                     id="txt3sub"
