@@ -8,7 +8,6 @@ import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { LogIn, LogOut, User as UserIcon, ShieldAlert, Loader2, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
 
 // ─────────────────────────────────────────────────────────────
 // NAV TABS (Contact added here)
@@ -23,6 +22,7 @@ const NAV_TABS = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [active, setWithActive] = useState("Home");
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
