@@ -222,8 +222,8 @@ draw();
    <>
 
       <section
+        className="bg-background"
         style={{
-          background: "#D9D9D9",
           minHeight: "100vh",
           paddingTop: "80px",
           position: "relative",
@@ -267,7 +267,7 @@ draw();
             zIndex: 1, pointerEvents: "none",
           }} viewBox="0 0 100 100">
             <polygon points="50,2 93,26 93,74 50,98 7,74 7,26"
-              fill="none" stroke="#CDEF33" strokeWidth="1"/>
+              fill="none" stroke="var(--accent)" strokeWidth="1"/>
           </svg>
         ))}
 
@@ -287,7 +287,7 @@ draw();
           left: 0,
           right: 0,
           height: "28px",
-          background: "#202221",
+          background: "var(--card-bg)",
           borderBottom: "1px solid rgba(0,0,0,0.3)",
           overflow: "hidden",
           zIndex: 3,
@@ -345,7 +345,7 @@ draw();
               {"OUR TEAM".split("").map((char, i) => (
                 <span key={i} className="letter-anim" style={{
                   animationDelay: `${i * 0.06}s`,
-                  color: char === " " ? "transparent" : "#000000",
+                  color: char === " " ? "transparent" : "var(--foreground)",
                   display: char === " " ? "inline-block" : undefined,
                   width: char === " " ? "0.3em" : undefined,
                 }}>
@@ -370,7 +370,7 @@ draw();
 
           <div style={{
             width:"80px", height:"1px", margin:"20px auto 0",
-            background:"linear-gradient(to right, transparent, #CDEF33, transparent)",
+            background:"linear-gradient(to right, transparent, var(--accent), transparent)",
             animation:"fadeUp 0.8s 1s cubic-bezier(.22,1,.36,1) both",
           }} />
         </div>
@@ -393,7 +393,7 @@ draw();
           left: 0,
           right: 0,
           height: "40px",
-          background: "#202221",
+          background: "var(--card-bg)",
           borderTop: "1px solid rgba(0,0,0,0.2)",
           display: "flex",
           alignItems: "center",
@@ -415,7 +415,7 @@ draw();
               gap: "6px",
             }}>
               <span style={{ color: "rgba(217,217,217,0.4)" }}>{label}</span>
-              <span style={{ color: value.startsWith("●") ? "#CDEF33" : "rgba(217,217,217,0.75)" }}>{value}</span>
+              <span style={{ color: value.startsWith("●") ? "var(--accent)" : "rgba(217,217,217,0.75)" }}>{value}</span>
             </div>
           ))}
         </div>

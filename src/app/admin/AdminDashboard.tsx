@@ -10,6 +10,7 @@ import {
   upsertRegistrationFields,
   getTeamMembers,
   createTeamMember,
+  updateTeamMember,
   deleteTeamMember,
   type EventRow,
   type RegistrationFieldRow,
@@ -711,6 +712,7 @@ function TeamPanel() {
   const [members, setMembers] = useState<TeamMemberRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingMember, setEditingMember] = useState<TeamMemberRow | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const loadMembers = useCallback(async () => {
@@ -757,7 +759,10 @@ function TeamPanel() {
           Team Members <span className="text-white/20">({members.length})</span>
         </h2>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setEditingMember(null);
+            setShowForm(true);
+          }}
           className="px-5 py-2.5 bg-green-400 text-black font-mono text-xs font-bold rounded-lg hover:bg-green-300 transition-colors cursor-pointer"
         >
           + Add Member
@@ -767,10 +772,15 @@ function TeamPanel() {
       {/* Team member form modal */}
       {showForm && (
         <TeamMemberFormModal
-          onClose={() => setShowForm(false)}
+          initialData={editingMember}
+          onClose={() => {
+            setShowForm(false);
+            setEditingMember(null);
+          }}
           onCreated={() => {
             setShowForm(false);
-            setFeedback({ type: "success", text: "Member added!" });
+            setEditingMember(null);
+            setFeedback({ type: "success", text: editingMember ? "Member updated!" : "Member added!" });
             loadMembers();
             setTimeout(() => setFeedback(null), 3000);
           }}
@@ -829,13 +839,26 @@ function TeamPanel() {
                   </div>
                 </div>
 
-                {/* Delete */}
-                <button
-                  onClick={() => handleDelete(member.id, member.name)}
-                  className="text-xs text-white/20 hover:text-red-400 transition-colors cursor-pointer shrink-0"
-                >
-                  🗑
-                </button>
+                {/* Actions */}
+                <div className="flex flex-col items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => {
+                      setEditingMember(member);
+                      setShowForm(true);
+                    }}
+                    className="text-lg text-white/30 hover:text-green-400 transition-colors cursor-pointer"
+                    title="Edit"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDelete(member.id, member.name)}
+                    className="text-lg text-white/30 hover:text-red-400 transition-colors cursor-pointer"
+                    title="Delete"
+                  >
+                    🗑
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -848,15 +871,17 @@ function TeamPanel() {
 // ── Team Member Form Modal ────────────────────────────────────
 
 function TeamMemberFormModal({
+  initialData,
   onClose,
   onCreated,
 }: {
+  initialData?: TeamMemberRow | null;
   onClose: () => void;
   onCreated: () => void;
 }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -876,11 +901,14 @@ function TeamMemberFormModal({
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const res = await createTeamMember(formData);
+    const res = initialData
+      ? await updateTeamMember(initialData.id, formData)
+      : await createTeamMember(formData);
+
     if (res.success) {
       onCreated();
     } else {
-      setError(res.error || "Failed to add member");
+      setError(res.error || `Failed to ${initialData ? 'update' : 'add'} member`);
     }
     setSubmitting(false);
   };
@@ -893,7 +921,7 @@ function TeamMemberFormModal({
       <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto bg-[#0a0c0f] border border-green-500/20 rounded-xl shadow-[0_0_100px_rgba(34,197,94,0.15)]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-white/[0.02] sticky top-0 z-10 backdrop-blur-md">
-          <h3 className="font-mono text-sm font-bold text-green-400">+ ADD_TEAM_MEMBER</h3>
+          <h3 className="font-mono text-sm font-bold text-green-400">{initialData ? "✏️ EDIT_TEAM_MEMBER" : "+ ADD_TEAM_MEMBER"}</h3>
           <button
             onClick={onClose}
             className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-white/40 hover:text-white/80 transition-colors cursor-pointer text-xs"
@@ -939,33 +967,50 @@ function TeamMemberFormModal({
 
           {/* Name + Role */}
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Name" name="name" placeholder="Vitalik Buterin" required />
-            <FormField label="Role" name="role" placeholder="Protocol Lead" required />
+            <FormField label="Name" name="name" defaultValue={initialData?.name} placeholder="Vitalik Buterin" required />
+            <FormField label="Role" name="role" defaultValue={initialData?.role} placeholder="Protocol Lead" required />
           </div>
 
-          {/* Department */}
-          <div>
-            <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
-              Department
-            </label>
-            <select
-              name="department"
-              required
-              defaultValue=""
-              className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors"
-            >
-              <option value="" disabled className="bg-[#0a0c0f]">Select department...</option>
-              <option value="core" className="bg-[#0a0c0f]">Core</option>
-              <option value="media & design" className="bg-[#0a0c0f]">Media &amp; Design</option>
-              <option value="tech" className="bg-[#0a0c0f]">Tech</option>
-              <option value="marketing" className="bg-[#0a0c0f]">Marketing</option>
-              <option value="event&ops" className="bg-[#0a0c0f]">Event &amp; Ops</option>
-              <option value="corporate relations" className="bg-[#0a0c0f]">Corporate Relations</option>
-            </select>
+          {/* Department & Hierarchy */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+                Department
+              </label>
+              <select
+                name="department"
+                required
+                defaultValue={initialData?.department || ""}
+                className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors"
+              >
+                <option value="" disabled className="bg-[#0a0c0f]">Select department...</option>
+                <option value="core" className="bg-[#0a0c0f]">Core</option>
+                <option value="media & design" className="bg-[#0a0c0f]">Media &amp; Design</option>
+                <option value="tech" className="bg-[#0a0c0f]">Tech</option>
+                <option value="marketing" className="bg-[#0a0c0f]">Marketing</option>
+                <option value="event&ops" className="bg-[#0a0c0f]">Event &amp; Ops</option>
+                <option value="corporate relations" className="bg-[#0a0c0f]">Corporate Relations</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+                Hierarchy Level
+              </label>
+              <select
+                name="hierarchy_level"
+                defaultValue={initialData?.hierarchy_level || ""}
+                className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors"
+              >
+                <option value="" className="bg-[#0a0c0f]">Associate (Default)</option>
+                <option value="president" className="bg-[#0a0c0f]">President / Vice President</option>
+                <option value="lead" className="bg-[#0a0c0f]">Lead</option>
+              </select>
+            </div>
           </div>
 
           {/* Description */}
-          <FormField label="Description" name="description" placeholder="Short bio..." />
+          <FormField label="Description" name="description" defaultValue={initialData?.description || ""} placeholder="Short bio..." />
 
           {/* Socials */}
           <div>
@@ -973,10 +1018,10 @@ function TeamMemberFormModal({
               Social Links
             </label>
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="" name="twitter" placeholder="Twitter URL" />
-              <FormField label="" name="linkedin" placeholder="LinkedIn URL" />
-              <FormField label="" name="github" placeholder="GitHub URL" />
-              <FormField label="" name="instagram" placeholder="Instagram URL" />
+              <FormField label="" name="twitter" defaultValue={initialData?.socials?.twitter || ""} placeholder="Twitter URL" />
+              <FormField label="" name="linkedin" defaultValue={initialData?.socials?.linkedin || ""} placeholder="LinkedIn URL" />
+              <FormField label="" name="github" defaultValue={initialData?.socials?.github || ""} placeholder="GitHub URL" />
+              <FormField label="" name="instagram" defaultValue={initialData?.socials?.instagram || ""} placeholder="Instagram URL" />
             </div>
           </div>
 
@@ -994,7 +1039,7 @@ function TeamMemberFormModal({
               disabled={submitting}
               className="px-6 py-2.5 bg-green-400 text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
             >
-              {submitting ? "Adding..." : "Add Member →"}
+              {submitting ? (initialData ? "Updating..." : "Adding...") : (initialData ? "Update Member →" : "Add Member →")}
             </button>
           </div>
         </form>
@@ -1013,12 +1058,14 @@ function FormField({
   placeholder,
   required,
   type = "text",
+  defaultValue,
 }: {
   label: string;
   name: string;
   placeholder?: string;
   required?: boolean;
   type?: string;
+  defaultValue?: string;
 }) {
   return (
     <div>
@@ -1032,6 +1079,7 @@ function FormField({
         name={name}
         placeholder={placeholder}
         required={required}
+        defaultValue={defaultValue}
         className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors placeholder:text-white/15"
       />
     </div>

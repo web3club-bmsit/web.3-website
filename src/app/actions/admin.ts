@@ -66,6 +66,7 @@ export type TeamMemberRow = {
   description: string | null;
   image_url: string | null;
   sort_order: number;
+  hierarchy_level: string | null;
   socials: Record<string, string>;
 };
 
@@ -289,8 +290,25 @@ export async function getTeamMembers(): Promise<TeamMemberRow[]> {
     .from("team_members")
     .select("*")
     .order("sort_order", { ascending: true });
-  return (data as TeamMemberRow[]) || [];
+
+  if (!data) return [];
+
+  const hierarchyWeights: Record<string, number> = {
+    president: 1,
+    lead: 2,
+    "": 3, // Associates / default
+  };
+
+  return (data as TeamMemberRow[]).sort((a, b) => {
+    const wA = hierarchyWeights[a.hierarchy_level || ""] || 3;
+    const wB = hierarchyWeights[b.hierarchy_level || ""] || 3;
+    if (wA !== wB) return wA - wB;
+    return a.sort_order - b.sort_order;
+  });
 }
+
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function createTeamMember(
   formData: FormData
@@ -303,15 +321,19 @@ export async function createTeamMember(
     if (imageFile && imageFile.size > 0) {
       const ext = imageFile.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("member-images")
-        .upload(fileName, imageFile);
-      if (uploadError) return { success: false, error: `Image upload failed: ${uploadError.message}` };
-
-      const { data: urlData } = supabase.storage
-        .from("member-images")
-        .getPublicUrl(fileName);
-      imageUrl = urlData.publicUrl;
+      
+      const arrayBuffer = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      
+      const publicDir = path.join(process.cwd(), "public", "members");
+      
+      try {
+        await mkdir(publicDir, { recursive: true });
+        await writeFile(path.join(publicDir, fileName), buffer);
+        imageUrl = `/members/${fileName}`;
+      } catch (uploadError: any) {
+        return { success: false, error: `Image upload failed: ${uploadError.message}` };
+      }
     }
 
     const socials: Record<string, string> = {};
@@ -334,11 +356,67 @@ export async function createTeamMember(
         role: formData.get("role") as string,
         department: (formData.get("department") as string) || "core",
         description: (formData.get("description") as string) || null,
+        hierarchy_level: (formData.get("hierarchy_level") as string) || null,
         image_url: imageUrl,
         sort_order: (lastMember?.sort_order ?? -1) + 1,
         socials,
       },
     ]);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function updateTeamMember(
+  memberId: string,
+  formData: FormData
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await requireAdmin();
+
+    let imageUrl: string | null = null;
+    const imageFile = formData.get("image") as File | null;
+    if (imageFile && imageFile.size > 0) {
+      const ext = imageFile.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      
+      const arrayBuffer = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      
+      const publicDir = path.join(process.cwd(), "public", "members");
+      
+      try {
+        await mkdir(publicDir, { recursive: true });
+        await writeFile(path.join(publicDir, fileName), buffer);
+        imageUrl = `/members/${fileName}`;
+      } catch (uploadError: any) {
+        return { success: false, error: `Image upload failed: ${uploadError.message}` };
+      }
+    }
+
+    const socials: Record<string, string> = {};
+    ["twitter", "linkedin", "github", "instagram"].forEach((key) => {
+      const val = formData.get(key) as string;
+      if (val) socials[key] = val;
+    });
+
+    const payload: any = {
+      name: formData.get("name") as string,
+      role: formData.get("role") as string,
+      department: (formData.get("department") as string) || "core",
+      description: (formData.get("description") as string) || null,
+      hierarchy_level: (formData.get("hierarchy_level") as string) || null,
+      socials,
+    };
+    if (imageUrl) payload.image_url = imageUrl;
+
+    const { error } = await supabase
+      .from("team_members")
+      .update(payload)
+      .eq("id", memberId);
 
     if (error) return { success: false, error: error.message };
     return { success: true };

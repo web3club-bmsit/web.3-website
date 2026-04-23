@@ -49,7 +49,7 @@ export default function GlobalCursor() {
     <div
       ref={cursorRef}
       className={`custom-cursor mode-${mode}`}
-      style={{ pointerEvents: "none", zIndex: 9999 }}
+      style={{ pointerEvents: "none", zIndex: 999999 }}
     />
   );
 }

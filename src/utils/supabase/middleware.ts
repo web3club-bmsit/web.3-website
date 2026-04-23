@@ -20,9 +20,6 @@ export async function updateSession(request: NextRequest) {
             value,
             ...options,
           })
-          supabaseResponse = NextResponse.next({
-            request,
-          })
           supabaseResponse.cookies.set({
             name,
             value,
@@ -34,9 +31,6 @@ export async function updateSession(request: NextRequest) {
             name,
             value: '',
             ...options,
-          })
-          supabaseResponse = NextResponse.next({
-            request,
           })
           supabaseResponse.cookies.set({
             name,
