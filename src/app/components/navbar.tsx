@@ -8,7 +8,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { LogIn, LogOut, User as UserIcon, ShieldAlert, Loader2 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
-// NAV TABS (Contact added here)
+// NAV TABS (Contact added here) .
 // ─────────────────────────────────────────────────────────────
 const NAV_TABS = [
   { label: "Home", href: "/" },
