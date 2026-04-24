@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -67,9 +67,15 @@ export default function Hero() {
   const progressRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
   const fixedLayerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme !== "light";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = !mounted || resolvedTheme !== "light";
   const PAL = isDark ? DARK_PALETTE : LIGHT_PALETTE;
 
   // Scramble utility
