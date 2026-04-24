@@ -36,7 +36,14 @@ type Particle = {
 
 
 export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
-  const chunkedRows = chunkArray(members, 3);
+  const [selectedDept, setSelectedDept] = useState("all");
+  const filteredMembers = selectedDept === "all" 
+    ? members 
+    : members.filter((m) => m.department?.toLowerCase() === selectedDept);
+  const chunkedRows = chunkArray(filteredMembers, 3);
+  
+  const departments = ["all", ...Array.from(new Set(members.map((m) => m.department?.toLowerCase() || "other")))];
+  
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [glitching, setGlitching] = useState(false);
   const glitchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -345,7 +352,7 @@ draw();
               {"OUR TEAM".split("").map((char, i) => (
                 <span key={i} className="letter-anim" style={{
                   animationDelay: `${i * 0.06}s`,
-                  color: char === " " ? "transparent" : "var(--foreground)",
+                  color: char === " " ? "transparent" : (i >= 4 ? "var(--accent)" : "var(--foreground)"),
                   display: char === " " ? "inline-block" : undefined,
                   width: char === " " ? "0.3em" : undefined,
                 }}>
@@ -373,6 +380,51 @@ draw();
             background:"linear-gradient(to right, transparent, var(--accent), transparent)",
             animation:"fadeUp 0.8s 1s cubic-bezier(.22,1,.36,1) both",
           }} />
+        </div>
+
+        {/* Filters */}
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "12px",
+          flexWrap: "wrap",
+          padding: "0 24px 40px",
+          position: "relative",
+          zIndex: 2,
+        }}>
+          {departments.map(dept => (
+            <button
+              key={dept}
+              onClick={() => setSelectedDept(dept)}
+              style={{
+                background: selectedDept === dept ? "rgba(205,239,51,0.15)" : "transparent",
+                color: selectedDept === dept ? "#CDEF33" : "rgba(255,255,255,0.4)",
+                border: `1px solid ${selectedDept === dept ? "rgba(205,239,51,0.4)" : "rgba(255,255,255,0.1)"}`,
+                padding: "6px 16px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                cursor: "pointer",
+                fontFamily: "'IBM Plex Mono', monospace",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                if (selectedDept !== dept) {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectedDept !== dept) {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.4)";
+                }
+              }}
+            >
+              {dept}
+            </button>
+          ))}
         </div>
 
         {/* Grid */}
@@ -450,6 +502,7 @@ function RevealRow({
               opacity: inView ? 1 : 0.25,
               transform: inView ? "translateY(0) scale(1)" : "translateY(28px) scale(0.98)",
               transition: `opacity 0.65s cubic-bezier(.22,1,.36,1) ${cardIdx * 0.1 + rowIdx * 0.08}s, transform 0.65s cubic-bezier(.22,1,.36,1) ${cardIdx * 0.1 + rowIdx * 0.08}s`,
+              height: "100%",
             }}
           >
             <MemberCardWrapper
@@ -470,7 +523,7 @@ function MemberCardWrapper({
 }) {
   return (
     <div
-      style={{ position: "relative" }}
+      style={{ position: "relative", height: "100%" }}
     >
       <MemberCard 
         name={member.name}

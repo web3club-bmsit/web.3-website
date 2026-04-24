@@ -6,6 +6,8 @@ import SpotlightCard from "../ui/SpotlightCard";
 import DecryptedText from "../ui/DecryptedText";
 import AnimatedCounter from "../ui/AnimatedCounter";
 import Magnet from "../ui/Magnet";
+import { Maximize2, X } from "lucide-react";
+import { createPortal } from "react-dom";
 
 export type { HackathonEvent };
 
@@ -40,6 +42,7 @@ const CHAIN_DOT: Record<string, string> = {
 export default function HackathonCard({ event, onRegister, isPast }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
   const chainStyle = event.chain
     ? CHAIN_COLOR[event.chain] ?? "text-green-400 bg-green-400/10 border-green-400/20"
@@ -60,11 +63,38 @@ export default function HackathonCard({ event, onRegister, isPast }: Props) {
       }
     >
       {/* ── Clickable header ─────────────────────────────────── */}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setExpanded((v) => !v);
+          }
+        }}
         onClick={() => setExpanded((v) => !v)}
         className="w-full text-left p-5 sm:p-6 cursor-pointer"
       >
+        {/* Event Image */}
+        <div className={`group relative w-full aspect-video rounded-lg mb-5 overflow-hidden border bg-black/20 flex items-center justify-center ${isPast ? "border-white/[0.04] opacity-50" : "border-white/[0.08]"}`}>
+          <img
+            src={event.imageUrl || "/placeholder-event.png"}
+            alt={event.title}
+            className="w-full h-full object-contain"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setFullscreen(true);
+            }}
+            className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/80 backdrop-blur-sm rounded-md text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300"
+            title="View Fullscreen"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </div>
+
         {/* Top row: tags + status */}
         <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -149,7 +179,7 @@ export default function HackathonCard({ event, onRegister, isPast }: Props) {
           <span>{event.location}</span>
           <span>{event.teamMin}–{event.teamMax} members</span>
         </div>
-      </button>
+      </div>
 
       {/* ── Expandable details ────────────────────────────────── */}
       <div
@@ -280,6 +310,33 @@ export default function HackathonCard({ event, onRegister, isPast }: Props) {
           </Magnet>
         )}
       </div>
+
+      {fullscreen && typeof window !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-8 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            setFullscreen(false);
+          }}
+        >
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setFullscreen(false);
+            }}
+            className="absolute top-6 right-6 text-white/50 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-[101]"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img 
+            src={event.imageUrl || "/placeholder-event.png"} 
+            alt={event.title} 
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" 
+          />
+        </div>,
+        document.body
+      )}
     </SpotlightCard>
   );
 }

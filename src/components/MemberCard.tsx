@@ -50,6 +50,9 @@ export default function MemberCard({
           position: "relative",
           borderRadius: "16px",
           padding: "1.5px", 
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
           background: hovered
             ? "conic-gradient(from var(--angle, 0deg), #CDEF33 0%, #202221 25%, #000 50%, #CDEF33 75%, #202221 100%)"
             : "linear-gradient(135deg, #20222130 0%, #CDEF3320 50%, #20222115 100%)",
@@ -100,6 +103,9 @@ export default function MemberCard({
             overflow: "hidden",
             position: "relative",
             zIndex: 1,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           {/* Cursor-tracking radial glow inside card */}
@@ -168,6 +174,7 @@ export default function MemberCard({
             textAlign: "center",
             position: "relative",
             zIndex: 2,
+            flex: 1,
           }}>
             {/* Role pill */}
             <span style={{
@@ -215,7 +222,7 @@ export default function MemberCard({
               width: "40px",
               height: "1px",
               background: "linear-gradient(to right, transparent, rgba(205,239,51,0.4), transparent)",
-              margin: "0 auto 14px",
+              margin: "auto auto 14px",
             }} />
       
     <div style={{ display: "flex", gap: "18px", justifyContent: "center" }}>

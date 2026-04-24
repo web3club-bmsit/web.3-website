@@ -83,7 +83,7 @@ export default function RegistrationTerminal({ eventId, eventName, onClose }: Pr
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
             }
           });
-          
+
           if (!res.ok) {
             console.error("Failed to fetch fields, status:", res.status);
           } else {
@@ -105,17 +105,21 @@ export default function RegistrationTerminal({ eventId, eventName, onClose }: Pr
       // Check auth
       let fetchedUser: User | null = null;
       try {
-        console.log("[DEBUG] Fetching user...");
-        const { data: { user } } = await supabase.auth.getUser();
-        console.log("[DEBUG] Fetch user complete.", { user });
-        fetchedUser = user ?? null;
+        console.log("[DEBUG] Fetching user session...");
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise<any>((resolve) => setTimeout(() => resolve({ data: { session: null } }), 2000));
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+
+        const user = session?.user ?? null;
+        console.log("[DEBUG] Fetch session complete.", { user });
+        fetchedUser = user;
         if (active) setUser(fetchedUser);
       } catch (e) {
         console.error('Auth check error:', e);
       } finally {
-        console.log("[DEBUG] Finally block active:", active);
+        console.log("[DEBUG] Finally block executing");
+        setAuthLoading(false);
         if (active) {
-          setAuthLoading(false);
           runBootSequence(fetchedUser, loadedSteps);
         }
       }
@@ -130,7 +134,8 @@ export default function RegistrationTerminal({ eventId, eventName, onClose }: Pr
 
       const boot: Line[] = [
         { type: "system" as const, text: "Sovereign Network Terminal v1.0.0 — Event Registration Shell" },
-        { type: "ascii" as const, text: `
+        {
+          type: "ascii" as const, text: `
 ██╗    ██╗███████╗██████╗ ██████╗ 
 ██║    ██║██╔════╝██╔══██╗╚════██╗
 ██║ █╗ ██║█████╗  ██████╔╝ █████╔╝
@@ -140,7 +145,7 @@ export default function RegistrationTerminal({ eventId, eventName, onClose }: Pr
         `},
         { type: "highlight" as const, text: `TARGET EVENT: ${eventName}` },
         { type: "system" as const, text: "Establishing secure connection..." },
-        { type: "success" as const, text: `Connection established. Session UUID: ${crypto.randomUUID?.() || '000000-0000'}` },
+        { type: "success" as const, text: `Connection established. Session UUID: ${Math.random().toString(36).slice(2)}` },
         { type: "output" as const, text: "───────────────────────────────────────" },
       ];
 
@@ -218,7 +223,7 @@ export default function RegistrationTerminal({ eventId, eventName, onClose }: Pr
       }
       if (cmd === "help") {
         ["Available commands:", "  help — show this manual", "  clear — clear terminal buffer",
-         "  exit/abort/quit — close terminal", "  restart — start over", "  status — view staged payload"
+          "  exit/abort/quit — close terminal", "  restart — start over", "  status — view staged payload"
         ].forEach((t) => push({ type: "output", text: t }));
         return;
       }

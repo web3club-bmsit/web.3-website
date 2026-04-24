@@ -10,14 +10,14 @@ const CONTACTS = [
   },
   {
     label: "Phone",
-    value: "+91 99999 99999",
-    href: "tel:+919999999999",
+    value: "+91 8955015524",
+    href: "tel: +91 8955015524",
   },
   {
-  label: "Instagram",
-  value: "@web3",
-  href: "https://instagram.com/web3",
-}
+    label: "Instagram",
+    value: "@web.3.bmsit",
+    href: "https://www.instagram.com/web.3.bmsit",
+  }
 ];
 
 export default function Contact() {
@@ -65,16 +65,16 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-mono px-6 md:px-16 pt-24 pb-10">
-      
+    <div className="min-h-screen bg-background text-foreground font-mono px-6 md:px-16 pt-24 pb-10">
+
       {/* Heading */}
       <div className="mb-10">
-        <p className="text-[#CDEF33] text-[10px] tracking-[0.3em] uppercase mb-2">
+        <p className="text-accent text-[10px] tracking-[0.3em] uppercase mb-2">
           — Establish Connection
         </p>
 
         <h1 className="text-[48px] md:text-[80px] font-bold leading-none">
-          CONTACT US
+          CONTACT <span className="text-accent">US</span>
         </h1>
       </div>
 
@@ -83,15 +83,15 @@ export default function Contact() {
 
         {/* LEFT: SEND MESSAGE (PRIMARY) */}
         <div>
-          <p className="text-[#CDEF33] text-[10px] tracking-[0.3em] uppercase mb-4">
+          <p className="text-accent text-[10px] tracking-[0.3em] uppercase mb-4">
             Send Message
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
-                className="bg-[#202221] border border-[#2a2b2a] px-4 py-3 text-sm focus:border-[#CDEF33] outline-none"
+                className="bg-card border border-border px-4 py-3 text-sm focus:border-accent outline-none"
                 name="name"
                 placeholder="Name"
                 value={form.name}
@@ -99,7 +99,7 @@ export default function Contact() {
                 required
               />
               <input
-                className="bg-[#202221] border border-[#2a2b2a] px-4 py-3 text-sm focus:border-[#CDEF33] outline-none"
+                className="bg-card border border-border px-4 py-3 text-sm focus:border-accent outline-none"
                 name="email"
                 type="email"
                 placeholder="Email"
@@ -110,7 +110,7 @@ export default function Contact() {
             </div>
 
             <input
-              className="w-full bg-[#202221] border border-[#2a2b2a] px-4 py-3 text-sm focus:border-[#CDEF33] outline-none"
+              className="w-full bg-card border border-border px-4 py-3 text-sm focus:border-accent outline-none"
               name="subject"
               placeholder="Subject"
               value={form.subject}
@@ -118,7 +118,7 @@ export default function Contact() {
             />
 
             <textarea
-              className="w-full bg-[#202221] border border-[#2a2b2a] px-4 py-3 text-sm focus:border-[#CDEF33] outline-none resize-none"
+              className="w-full bg-card border border-border px-4 py-3 text-sm focus:border-accent outline-none resize-none"
               name="message"
               rows={5}
               placeholder="Message"
@@ -131,13 +131,13 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="bg-[#CDEF33] text-black px-8 py-3 text-xs font-bold tracking-widest hover:opacity-90 disabled:opacity-50"
+                className="bg-accent text-background px-8 py-3 text-xs font-bold tracking-widest hover:opacity-90 disabled:opacity-50"
               >
                 {status === "sending" ? "SENDING..." : "SEND MESSAGE →"}
               </button>
 
               {status === "success" && (
-                <p className="text-[#CDEF33] text-sm">✓ Message sent</p>
+                <p className="text-accent text-sm">✓ Message sent</p>
               )}
               {status === "error" && (
                 <p className="text-red-500 text-sm">✗ Something went wrong</p>
@@ -148,7 +148,7 @@ export default function Contact() {
 
         {/* RIGHT: DIRECT LINKS */}
         <div>
-          <p className="text-[#CDEF33] text-[10px] tracking-[0.3em] uppercase mb-4">
+          <p className="text-accent text-[10px] tracking-[0.3em] uppercase mb-4">
             Direct Channels
           </p>
 
@@ -158,27 +158,27 @@ export default function Contact() {
                 key={c.label}
                 href={c.href}
                 target="_blank"
-                className="flex items-center justify-between border border-[#202221] bg-[#0a0a0a] px-5 py-4 hover:border-[#CDEF33] hover:bg-[#111] transition"
+                className="flex items-center justify-between border border-border bg-card px-5 py-4 hover:border-accent hover:bg-black/5 dark:hover:bg-white/5 transition"
               >
                 <div>
-                  <p className="text-[10px] tracking-widest text-gray-500 uppercase">
+                  <p className="text-[10px] tracking-widest text-foreground/50 uppercase">
                     {c.label}
                   </p>
                   <p className="text-sm font-semibold">{c.value}</p>
                 </div>
-                <span className="text-gray-600">↗</span>
+                <span className="text-foreground/40">↗</span>
               </a>
             ))}
           </div>
 
           {/* Location */}
-         
+
         </div>
       </div>
 
       {/* Footer */}
       <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 mt-12 gap-2">
-        
+
         <p>Web3 · Cryptography · Open Source</p>
       </div>
     </div>

@@ -12,10 +12,10 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#08080c] text-white overflow-hidden">
+    <footer className="relative bg-background text-foreground overflow-hidden">
       {/* ── Top row: copyright left · socials right ── */}
       <div className="flex items-start justify-between px-6 pt-10 sm:px-10">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/40">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/40">
           {copyrightText}
         </span>
 
@@ -26,7 +26,7 @@ export default function Footer() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/40 transition-colors duration-200 hover:text-green-400"
+              className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/40 transition-colors duration-200 hover:text-accent"
             >
               {link.label}
             </a>
@@ -40,7 +40,7 @@ export default function Footer() {
           <p
             key={line.text}
             className={`m-0 leading-[0.9] font-black uppercase tracking-tighter ${
-              line.accent ? "text-green-400" : "text-white"
+              line.accent ? "text-accent" : "text-foreground"
             }`}
             style={{ fontSize: "clamp(4rem, 12vw, 10rem)" }}
           >
@@ -56,7 +56,7 @@ export default function Footer() {
             <a
               key={link.label}
               href={link.href}
-              className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/30 transition-colors duration-200 hover:text-white/60"
+              className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/30 transition-colors duration-200 hover:text-foreground/60"
             >
               {link.label}
             </a>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import * as THREE from "three";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,8 +15,8 @@ if (typeof window !== "undefined") {
 // ════════════════════════════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════════════════════════════
-const ACCENT = 0x4ade80;
-const BG = 0x08080c;
+const ACCENT = 0xcdef33;
+const BG = 0x202221;
 const P_COUNT = 2500;
 const NODE_CT = 55;
 const SCRAMBLE_CHARS = "#◆Ξ0x▲9f$&";
@@ -28,6 +29,34 @@ const TEXTS = [
 ];
 
 export default function Hero() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme !== "light";
+
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const keyLightRef = useRef<THREE.PointLight | null>(null);
+  const hoverLightRef = useRef<THREE.PointLight | null>(null);
+  const btcMatRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
+  const pMatRef = useRef<THREE.PointsMaterial | null>(null);
+  const lineMatRef = useRef<THREE.LineBasicMaterial | null>(null);
+
+  // Sync theme changes
+  useEffect(() => {
+    const bgColor = isDark ? 0x202221 : 0xd9d9d9;
+    const accentColor = 0xcdef33;
+    
+    if (sceneRef.current) {
+      sceneRef.current.background = new THREE.Color(bgColor);
+      if (sceneRef.current.fog) {
+        sceneRef.current.fog.color.setHex(bgColor);
+      }
+    }
+    if (keyLightRef.current) keyLightRef.current.color.setHex(accentColor);
+    if (hoverLightRef.current) hoverLightRef.current.color.setHex(accentColor);
+    if (btcMatRef.current) btcMatRef.current.emissive.setHex(accentColor);
+    if (pMatRef.current) pMatRef.current.color.setHex(accentColor);
+    if (lineMatRef.current) lineMatRef.current.color.setHex(accentColor);
+  }, [isDark]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollSpacerRef = useRef<HTMLDivElement>(null);
@@ -75,6 +104,7 @@ export default function Hero() {
 
     // ── THREE.JS SETUP ──
     const scene = new THREE.Scene();
+    sceneRef.current = scene;
     scene.background = new THREE.Color(BG);
     scene.fog = new THREE.FogExp2(BG, 0.038);
 
@@ -95,12 +125,14 @@ export default function Hero() {
     // Lights
     scene.add(new THREE.AmbientLight(0x111122, 0.6));
     const keyLight = new THREE.PointLight(ACCENT, 4, 30);
+    keyLightRef.current = keyLight;
     keyLight.position.set(3, 4, 5);
     scene.add(keyLight);
     const fillLight = new THREE.PointLight(0x7c3aed, 1.5, 25);
     fillLight.position.set(-4, -2, 3);
     scene.add(fillLight);
     const hoverLight = new THREE.PointLight(ACCENT, 0, 12);
+    hoverLightRef.current = hoverLight;
     scene.add(hoverLight);
 
     // ── SHADERS & OBJECTS ──
@@ -171,6 +203,7 @@ export default function Hero() {
       opacity: 0,
     });
     const btcMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.9, 0), btcMat);
+    btcMatRef.current = btcMat;
     btcMesh.visible = false;
     scene.add(btcMesh);
 
@@ -206,6 +239,7 @@ export default function Hero() {
       depthWrite: false,
     });
     const particles = new THREE.Points(pGeo, pMat);
+    pMatRef.current = pMat;
     scene.add(particles);
 
     // Nodes
@@ -231,6 +265,7 @@ export default function Hero() {
     lineGeo.setAttribute("position", new THREE.BufferAttribute(lineArr, 3));
     const lineMat = new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0, depthWrite: false });
     const lineSegments = new THREE.LineSegments(lineGeo, lineMat);
+    lineMatRef.current = lineMat;
     scene.add(lineSegments);
 
     // Grid
@@ -426,17 +461,17 @@ export default function Hero() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative z-0 bg-[#08080c]">
+    <div ref={containerRef} className="relative z-0 bg-background">
       {/* 
           WRAPPER FOR FIXED ELEMENTS 
           This layer manages the definitive "stop" for the hero visuals.
       */}
       <div ref={fixedLayerRef} className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300">
         {/* Background Overlay */}
-        <div className="absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(8,8,12,0.85)_100%)]" />
+        <div className="absolute inset-0 z-[1] transition-colors duration-500 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(217,217,217,0.85)_100%)] dark:bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(32,34,33,0.85)_100%)]" />
         
         {/* Progress Bar */}
-        <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-green-400 z-30 transition-[width] duration-75" style={{ width: "0%" }} />
+        <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-accent z-30 transition-[width] duration-75" style={{ width: "0%" }} />
 
         {/* Canvas */}
         <canvas ref={canvasRef} className="absolute top-0 left-0 z-[1] transition-opacity duration-300" />
@@ -450,21 +485,21 @@ export default function Hero() {
             >
               {i === 3 ? (
                 <div className="flex flex-col items-center">
-                  <h1 id={t.id} className="text-[clamp(2.4rem,10vw,8rem)] font-black text-center uppercase tracking-tighter leading-[0.9] bg-gradient-to-br from-white via-white to-green-400 bg-clip-text text-transparent" />
-                  <p id="txt3sub" className="mt-4 text-[clamp(0.55rem,1.4vw,0.9rem)] font-semibold uppercase tracking-[0.25em] text-white/30 text-center" />
-                  <button className="pointer-events-auto mt-12 px-10 py-4 bg-green-400 text-black font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:scale-105 transition-transform shadow-[0_0_20px_rgba(74,222,128,0.25)] ring-1 ring-green-400/20 active:scale-95">
+                  <h1 id={t.id} className="text-[clamp(2.4rem,10vw,8rem)] font-logo text-center uppercase tracking-tighter leading-[0.9] text-[#202221] dark:text-[#D9D9D9]" />
+                  <p id="txt3sub" className="mt-4 text-[clamp(0.55rem,1.4vw,0.9rem)] font-semibold uppercase tracking-[0.25em] text-foreground/30 text-center" />
+                  <button className="pointer-events-auto mt-12 px-10 py-4 bg-accent text-background font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:scale-105 transition-transform shadow-[0_0_20px_rgba(74,222,128,0.25)] ring-1 ring-accent/20 active:scale-95">
                     Join the Chain →
                   </button>
                 </div>
               ) : (
-                <p id={t.id} className="text-[clamp(1.1rem,4vw,2.4rem)] font-bold text-center max-w-2xl leading-[1.2] text-white/90 drop-shadow-sm" />
+                <p id={t.id} className="text-[clamp(1.1rem,4vw,2.4rem)] font-bold text-center max-w-2xl leading-[1.2] text-foreground/90 drop-shadow-sm" />
               )}
             </div>
           ))}
         </div>
 
         {/* Scroll Hint */}
-        <div ref={scrollHintRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[9px] font-bold uppercase tracking-[0.35em] text-white/20 transition-opacity duration-500">
+        <div ref={scrollHintRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[9px] font-bold uppercase tracking-[0.35em] text-foreground/20 transition-opacity duration-500">
           <span className="inline-block animate-bounce">↓ scroll to explore</span>
         </div>
       </div>

@@ -2,23 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { EVENTS } from "@/data/events";
+import { getPublicEvents, type EventRow } from "@/app/actions/admin";
 import RegistrationTerminal from "./RegistrationTerminal";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import CardSwap, { Card } from "./CardSwap";
 import { useTheme } from "next-themes";
 
 export default function UpcomingEventHome() {
   const [showTerminal, setShowTerminal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string>("");
-  const [mounted, setMounted] = useState(false);
-  const { resolvedTheme } = useTheme();
+
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
+    getPublicEvents().then(data => {
+      setEvents(data || []);
+      setIsLoading(false);
+    });
   }, []);
-
-  const isDark = !mounted || resolvedTheme !== "light";
+  const { resolvedTheme } = useTheme();
 
   const handleRegister = (eventName: string) => {
     setSelectedEvent(eventName);
@@ -27,142 +30,125 @@ export default function UpcomingEventHome() {
 
   return (
     <section
-      className={`relative w-full py-40 px-8 lg:px-16 flex items-center justify-center min-h-[900px] z-20 overflow-hidden transition-colors duration-500 ${
-        isDark ? "bg-[#08080c]" : "bg-background"
-      }`}
+      className="relative w-full py-40 px-8 lg:px-16 flex items-center justify-center min-h-[900px] z-20 overflow-hidden transition-colors duration-500 bg-background"
     >
       {/* Decorative glow blobs in light mode */}
-      {!isDark && (
-        <>
-          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-green-200/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-slate-300/30 rounded-full blur-3xl pointer-events-none" />
-        </>
-      )}
+      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-green-200/30 rounded-full blur-3xl pointer-events-none dark:hidden" />
+      <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-slate-300/30 rounded-full blur-3xl pointer-events-none dark:hidden" />
 
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-        {/* Left Side text */}
         <div className="flex flex-col items-start text-left z-30 mb-20 lg:mb-0">
-          <h2
-            className={`text-5xl lg:text-7xl font-black mb-6 ${
-              isDark
-                ? "text-white"
-                : "bg-gradient-to-br from-green-600 via-emerald-500 to-green-400 bg-clip-text text-transparent"
-            }`}
-          >
+          <h2 className="text-5xl lg:text-7xl font-black mb-6 text-[#202221] dark:text-[#CDEF33]">
             Flagship<br />Events
           </h2>
-          <p className={`text-xl max-w-md ${isDark ? "text-white/50" : "text-slate-500"}`}>
+          <p className="text-xl max-w-md text-foreground/60">
             Card stacks have never looked so good. Discover our premier hackathons, workshops, and exclusive summits shifting the frontier of Web3.
           </p>
         </div>
 
         {/* Right Side Cards */}
         <div className="relative w-full flex justify-center lg:justify-end py-10 pointer-events-auto">
-          <CardSwap
-            width={600}
-            height={480}
-            cardDistance={50}
-            verticalDistance={50}
-            delay={2000}
-            pauseOnHover={true}
-            skewAmount={4}
-          >
-            {EVENTS.map((event) => {
-              const isUpcoming = new Date(event.startDate).getTime() > Date.now();
-              return (
-                <Card
-                  key={event.id}
-                  className={`flex flex-col justify-between p-0 overflow-hidden ${
-                    isDark
-                      ? "shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
-                      : "shadow-[0_30px_60px_rgba(0,0,0,0.3)]"
-                  }`}
-                >
-                  <img
-                    src="/placeholder-event.png"
-                    alt="Event placeholder"
-                    className={`w-full h-36 object-cover border-b ${isDark ? "border-white/10" : "border-white/10"}`}
-                  />
+          {isLoading ? (
+            <div className="w-[600px] h-[560px] rounded-xl bg-[#202221] dark:bg-card border border-[#D9D9D9]/10 dark:border-border flex flex-col items-center justify-center text-[#D9D9D9] dark:text-foreground">
+              <Loader2 className="w-8 h-8 animate-spin opacity-50 mb-4" />
+              <p className="font-mono text-xs opacity-50 tracking-widest uppercase">Syncing to chain...</p>
+            </div>
+          ) : (
+            <CardSwap
+              width={600}
+              height={560}
+              cardDistance={50}
+              verticalDistance={50}
+              delay={2000}
+              pauseOnHover={true}
+              skewAmount={4}
+            >
+              {events.filter(e => e.status !== "closed").length > 0 ? (
+                events.filter(e => e.status !== "closed").map((event) => {
+                  return (
+                    <Card
+                      key={event.id}
+                      className="flex flex-col justify-between p-0 overflow-hidden shadow-2xl bg-[#202221] dark:bg-card"
+                    >
+                      <div className="w-full h-48 bg-black/20 flex items-center justify-center border-b border-[#D9D9D9]/10 dark:border-border overflow-hidden">
+                        <img
+                          src={event.image_url || "/placeholder-event.png"}
+                          alt={event.title}
+                          className="w-full h-full object-cover object-[center_30%]"
+                        />
+                      </div>
 
-                  <div className="p-8 flex flex-col justify-between flex-1">
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div
-                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-mono font-bold uppercase tracking-widest ${
-                            isDark
-                              ? "border-green-400/20 bg-green-400/5 text-green-400"
-                              : "border-green-400/30 bg-green-500/10 text-green-300"
-                          }`}
-                        >
-                          {isUpcoming ? (
-                            <>
-                              <span
-                                className={`w-2 h-2 rounded-full animate-ping ${isDark ? "bg-green-400" : "bg-green-400"}`}
-                              />
-                              Upcoming Event
-                            </>
-                          ) : (
-                            "Past Event"
-                          )}
+                      <div className="p-8 flex flex-col justify-between flex-1">
+                        <div>
+                          <div className="flex justify-between items-start mb-4">
+                            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-mono font-bold uppercase tracking-widest ${event.status === "open" ? "border-green-400/20 bg-green-400/10 text-green-400" :
+                                "border-yellow-400/20 bg-yellow-400/10 text-yellow-400"
+                              }`}>
+                              <span className={`w-2 h-2 rounded-full animate-ping ${event.status === "open" ? "bg-green-400" : "bg-yellow-400"}`} />
+                              {event.status === "open" ? "Registration Open" : "Coming Soon"}
+                            </div>
+                            <span className="font-mono text-xs text-[#D9D9D9]/60 dark:text-foreground/40">
+                              {event.date}
+                            </span>
+                          </div>
+
+                          <h2 className="text-3xl font-black leading-tight mb-2 text-[#D9D9D9] dark:text-foreground">
+                            {event.title}
+                          </h2>
+                          <p className="text-sm line-clamp-2 text-[#D9D9D9]/80 dark:text-foreground/60">
+                            {event.description}
+                          </p>
                         </div>
-                        <span className={`font-mono text-xs ${isDark ? "text-white/40" : "text-white/40"}`}>
-                          {event.date}
-                        </span>
-                      </div>
 
-                      <h2 className={`text-3xl font-black leading-tight mb-2 ${isDark ? "text-white" : "text-white"}`}>
-                        {event.title}
-                      </h2>
-                      <p className={`text-sm line-clamp-2 ${isDark ? "text-white/50" : "text-white/50"}`}>
-                        {event.description}
-                      </p>
-                    </div>
-
-                    {isUpcoming && (
-                      <div className="flex flex-col gap-3 mt-6">
-                        <button
-                          onClick={() => handleRegister(event.title)}
-                          className={`px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center gap-2 group ${
-                            isDark
-                              ? "bg-green-400 text-black hover:bg-green-300"
-                              : "bg-green-500 text-white hover:bg-green-400 shadow-[0_4px_14px_rgba(34,197,94,0.4)]"
-                          }`}
-                        >
-                          Register for the event <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        <Link
-                          href="/events"
-                          className={`px-6 py-3 w-full border font-bold rounded-lg transition-all flex items-center justify-center ${
-                            isDark
-                              ? "border-white/10 text-white hover:bg-white/5"
-                              : "border-white/15 text-white/80 hover:bg-white/10"
-                          }`}
-                        >
-                          Explore all events
-                        </Link>
+                        <div className="flex flex-col gap-3 mt-6">
+                          {event.status === "open" ? (
+                            <button
+                              onClick={() => handleRegister(event.title)}
+                              className="px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center gap-2 group bg-[#CDEF33] text-[#202221] hover:bg-[#CDEF33]/80"
+                            >
+                              Register for the event <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                          ) : (
+                            <button
+                              disabled
+                              className="px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center gap-2 group bg-[#D9D9D9]/5 dark:bg-foreground/5 text-[#D9D9D9]/50 dark:text-foreground/50 cursor-not-allowed"
+                            >
+                              Registration not open yet
+                            </button>
+                          )}
+                          <Link
+                            href="/events"
+                            className="px-6 py-3 w-full border font-bold rounded-lg transition-all flex items-center justify-center border-[#D9D9D9]/20 dark:border-border text-[#D9D9D9] dark:text-foreground hover:bg-[#D9D9D9]/5 dark:hover:bg-foreground/5"
+                          >
+                            Explore all events
+                          </Link>
+                        </div>
                       </div>
-                    )}
-
-                    {!isUpcoming && (
-                      <div className="flex flex-col gap-3 mt-6">
-                        <Link
-                          href="/events"
-                          className={`px-6 py-3 w-full font-bold rounded-lg transition-all flex items-center justify-center ${
-                            isDark
-                              ? "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
-                              : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
-                          }`}
-                        >
-                          Read Recap
-                        </Link>
-                      </div>
-                    )}
+                    </Card>
+                  );
+                })
+              ) : (
+                <Card className="flex flex-col items-center justify-center p-8 shadow-2xl h-full text-center bg-[#202221] dark:bg-card">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-mono font-bold uppercase tracking-widest border-[#D9D9D9]/20 dark:border-foreground/20 bg-[#D9D9D9]/10 dark:bg-foreground/10 text-[#D9D9D9]/50 dark:text-foreground/50 mb-6">
+                    Check Back Later
                   </div>
+                  <h2 className="text-3xl font-black leading-tight mb-4 text-[#D9D9D9] dark:text-foreground">
+                    No Upcoming Events
+                  </h2>
+                  <p className="text-sm text-[#D9D9D9]/80 dark:text-foreground/60 mb-8 max-w-sm">
+                    We are currently brewing up some exciting new hackathons and workshops. Stay tuned!
+                  </p>
+                  <Link
+                    href="/events"
+                    className="px-6 py-3 w-full border font-bold rounded-lg transition-all flex items-center justify-center border-[#D9D9D9]/20 dark:border-border text-[#D9D9D9] dark:text-foreground hover:bg-[#D9D9D9]/5 dark:hover:bg-foreground/5"
+                  >
+                    View Past Events
+                  </Link>
                 </Card>
-              );
-            })}
-          </CardSwap>
+              )}
+            </CardSwap>
+          )}
         </div>
       </div>
 

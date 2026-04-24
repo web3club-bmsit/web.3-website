@@ -43,26 +43,26 @@ export default function AdminDashboard() {
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-[10px] font-mono text-green-400 uppercase tracking-widest">
+          <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <span className="text-[10px] font-mono text-accent uppercase tracking-widest">
             secure_admin_session_active
           </span>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold font-mono">
-          <span className="text-green-400">ADMIN</span>_CONTROL_CENTER
+          <span className="text-accent">ADMIN</span>_CONTROL_CENTER
         </h1>
       </header>
 
       {/* Tab bar */}
-      <div className="flex gap-1 p-1 rounded-lg bg-white/[0.04] border border-white/[0.06] w-fit mb-8">
+      <div className="flex gap-1 p-1 rounded-lg bg-foreground/[0.04] border border-foreground/[0.06] w-fit mb-8">
         {(["events", "team"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`font-mono text-xs font-semibold px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer ${
               tab === t
-                ? "bg-green-400/[0.12] text-green-400 border border-green-400/20"
-                : "text-white/30 hover:text-white/50 border border-transparent"
+                ? "bg-accent/[0.12] text-accent border border-accent/20"
+                : "text-foreground/30 hover:text-foreground/50 border border-transparent"
             }`}
           >
             {t === "events" ? "⚡ Events" : "👥 Team"}
@@ -128,7 +128,7 @@ function EventsPanel() {
         <div
           className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-lg font-mono text-sm border backdrop-blur-md animate-pulse ${
             feedback.type === "success"
-              ? "bg-green-400/10 border-green-400/30 text-green-400"
+              ? "bg-accent/10 border-accent/30 text-accent"
               : "bg-red-400/10 border-red-400/30 text-red-400"
           }`}
         >
@@ -138,12 +138,12 @@ function EventsPanel() {
 
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-mono text-lg text-white/60">
-          Events <span className="text-white/20">({events.length})</span>
+        <h2 className="font-mono text-lg text-foreground/60">
+          Events <span className="text-foreground/20">({events.length})</span>
         </h2>
         <button
           onClick={() => setShowForm(true)}
-          className="px-5 py-2.5 bg-green-400 text-black font-mono text-xs font-bold rounded-lg hover:bg-green-300 transition-colors cursor-pointer"
+          className="px-5 py-2.5 bg-accent text-black font-mono text-xs font-bold rounded-lg hover:bg-green-300 transition-colors cursor-pointer"
         >
           + Add Event
         </button>
@@ -179,11 +179,11 @@ function EventsPanel() {
       {/* Events list */}
       {loading ? (
         <div className="text-center py-20">
-          <div className="inline-block w-6 h-6 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin" />
+          <div className="inline-block w-6 h-6 border-2 border-accent/30 border-t-green-400 rounded-full animate-spin" />
         </div>
       ) : events.length === 0 ? (
-        <div className="text-center py-20 border border-white/[0.06] rounded-xl bg-white/[0.02]">
-          <p className="text-white/20 font-mono text-sm">No events yet. Create your first one!</p>
+        <div className="text-center py-20 border border-foreground/[0.06] rounded-xl bg-foreground/[0.02]">
+          <p className="text-foreground/20 font-mono text-sm">No events yet. Create your first one!</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -216,17 +216,17 @@ function EventCard({
   onEditFields: () => void;
 }) {
   const statusColors: Record<string, string> = {
-    open: "bg-green-400/10 text-green-400 border-green-400/20",
+    open: "bg-accent/10 text-accent border-accent/20",
     soon: "bg-yellow-400/10 text-yellow-400 border-yellow-400/20",
     closed: "bg-red-400/10 text-red-400 border-red-400/20",
   };
 
   return (
-    <div className="p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+    <div className="p-5 rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors">
       <div className="flex items-start gap-4">
         {/* Image thumbnail */}
         {event.image_url && (
-          <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-white/[0.06]">
+          <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-foreground/[0.06]">
             <img
               src={event.image_url}
               alt={event.title}
@@ -238,15 +238,15 @@ function EventCard({
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-1">
-            <h3 className="font-mono text-sm font-bold text-white truncate">{event.title}</h3>
+            <h3 className="font-mono text-sm font-bold text-foreground truncate">{event.title}</h3>
             <span
               className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded border ${statusColors[event.status]}`}
             >
               {event.status}
             </span>
           </div>
-          <p className="text-xs text-white/30 font-mono mb-2 truncate">{event.subtitle}</p>
-          <div className="flex flex-wrap gap-3 text-[10px] text-white/20 font-mono">
+          <p className="text-xs text-foreground/30 font-mono mb-2 truncate">{event.subtitle}</p>
+          <div className="flex flex-wrap gap-3 text-[10px] text-foreground/20 font-mono">
             <span>{event.date}</span>
             <span>{event.location}</span>
             <span>Team {event.team_min}–{event.team_max}</span>
@@ -260,7 +260,7 @@ function EventCard({
           <select
             value={event.status}
             onChange={(e) => onStatusChange(event.id, e.target.value as "open" | "soon" | "closed")}
-            className="bg-white/[0.05] border border-white/[0.1] text-white/60 text-xs font-mono rounded-md px-2 py-1.5 outline-none cursor-pointer hover:border-green-400/30 transition-colors"
+            className="bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/60 text-xs font-mono rounded-md px-2 py-1.5 outline-none cursor-pointer hover:border-accent/30 transition-colors"
           >
             <option value="open" className="bg-[#0a0c0f]">Open</option>
             <option value="soon" className="bg-[#0a0c0f]">Coming Soon</option>
@@ -270,7 +270,7 @@ function EventCard({
           {/* Edit registration fields */}
           <button
             onClick={onEditFields}
-            className="px-3 py-1.5 border border-white/[0.1] text-white/40 text-xs font-mono rounded-md hover:border-green-400/30 hover:text-green-400/60 transition-colors cursor-pointer"
+            className="px-3 py-1.5 border border-foreground/[0.1] text-foreground/40 text-xs font-mono rounded-md hover:border-accent/30 hover:text-accent/60 transition-colors cursor-pointer"
             title="Edit registration fields"
           >
             📝 Fields
@@ -331,16 +331,16 @@ function EventFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0a0c0f] border border-green-500/20 rounded-xl shadow-[0_0_100px_rgba(34,197,94,0.15)]">
         {/* Title bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-white/[0.02] sticky top-0 z-10 backdrop-blur-md">
-          <h3 className="font-mono text-sm font-bold text-green-400">+ CREATE_NEW_EVENT</h3>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-foreground/[0.02] sticky top-0 z-10 backdrop-blur-md">
+          <h3 className="font-mono text-sm font-bold text-accent">+ CREATE_NEW_EVENT</h3>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-white/40 hover:text-white/80 transition-colors cursor-pointer text-xs"
+            className="w-7 h-7 rounded-full bg-foreground/[0.05] hover:bg-foreground/[0.1] flex items-center justify-center text-foreground/40 hover:text-foreground/80 transition-colors cursor-pointer text-xs"
           >
             ✕
           </button>
@@ -356,20 +356,20 @@ function EventFormModal({
 
           {/* Image upload */}
           <div>
-            <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
               Event Image
             </label>
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="relative border-2 border-dashed border-white/[0.1] hover:border-green-400/30 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors group"
+              className="relative border-2 border-dashed border-foreground/[0.1] hover:border-accent/30 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors group"
             >
               {imagePreview ? (
                 <img src={imagePreview} alt="Preview" className="max-h-40 rounded-lg object-cover" />
               ) : (
                 <>
                   <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📷</div>
-                  <p className="text-xs text-white/30 font-mono">Click to upload event image</p>
-                  <p className="text-[10px] text-white/15 font-mono mt-1">PNG, JPG, WebP — max 5MB</p>
+                  <p className="text-xs text-foreground/30 font-mono">Click to upload event image</p>
+                  <p className="text-[10px] text-foreground/15 font-mono mt-1">PNG, JPG, WebP — max 5MB</p>
                 </>
               )}
               <input
@@ -406,13 +406,13 @@ function EventFormModal({
             <FormField label="Min Team" name="team_min" type="number" placeholder="1" />
             <FormField label="Max Team" name="team_max" type="number" placeholder="4" />
             <div>
-              <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+              <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
                 Status
               </label>
               <select
                 name="status"
                 defaultValue="open"
-                className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors"
+                className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-accent/40 transition-colors"
               >
                 <option value="open" className="bg-[#0a0c0f]">Open</option>
                 <option value="soon" className="bg-[#0a0c0f]">Coming Soon</option>
@@ -432,7 +432,7 @@ function EventFormModal({
 
           {/* Description */}
           <div>
-            <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
               Description
             </label>
             <textarea
@@ -440,7 +440,7 @@ function EventFormModal({
               rows={4}
               required
               placeholder="Describe your event..."
-              className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors resize-none placeholder:text-white/15"
+              className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-accent/40 transition-colors resize-none placeholder:text-foreground/15"
             />
           </div>
 
@@ -449,14 +449,14 @@ function EventFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 border border-white/[0.1] text-white/40 text-xs font-mono rounded-lg hover:text-white/60 transition-colors cursor-pointer"
+              className="px-5 py-2.5 border border-foreground/[0.1] text-foreground/40 text-xs font-mono rounded-lg hover:text-foreground/60 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-green-400 text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
+              className="px-6 py-2.5 bg-accent text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {submitting ? "Creating..." : "Create Event →"}
             </button>
@@ -548,19 +548,19 @@ function FieldsEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-[#0a0c0f] border border-green-500/20 rounded-xl shadow-[0_0_100px_rgba(34,197,94,0.15)]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-white/[0.02] sticky top-0 z-10 backdrop-blur-md">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-foreground/[0.02] sticky top-0 z-10 backdrop-blur-md">
           <div>
-            <h3 className="font-mono text-sm font-bold text-green-400">REGISTRATION_FIELDS</h3>
-            <p className="text-[10px] text-white/30 font-mono mt-0.5">for: {eventTitle}</p>
+            <h3 className="font-mono text-sm font-bold text-accent">REGISTRATION_FIELDS</h3>
+            <p className="text-[10px] text-foreground/30 font-mono mt-0.5">for: {eventTitle}</p>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-white/40 hover:text-white/80 transition-colors cursor-pointer text-xs"
+            className="w-7 h-7 rounded-full bg-foreground/[0.05] hover:bg-foreground/[0.1] flex items-center justify-center text-foreground/40 hover:text-foreground/80 transition-colors cursor-pointer text-xs"
           >
             ✕
           </button>
@@ -569,11 +569,11 @@ function FieldsEditorModal({
         <div className="p-6">
           {loading ? (
             <div className="text-center py-10">
-              <div className="inline-block w-6 h-6 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-accent/30 border-t-green-400 rounded-full animate-spin" />
             </div>
           ) : (
             <>
-              <p className="text-xs text-white/30 font-mono mb-4">
+              <p className="text-xs text-foreground/30 font-mono mb-4">
                 These fields will be shown to users during registration in the terminal. Drag to reorder (or use the order they appear here).
               </p>
 
@@ -581,10 +581,10 @@ function FieldsEditorModal({
                 {fields.map((field, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] flex flex-col gap-3"
+                    className="p-4 rounded-lg border border-foreground/[0.06] bg-foreground/[0.02] flex flex-col gap-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-green-400/50 font-bold">
+                      <span className="text-[10px] font-mono text-accent/50 font-bold">
                         FIELD #{idx + 1}
                       </span>
                       <button
@@ -597,7 +597,7 @@ function FieldsEditorModal({
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[9px] font-mono text-white/30 uppercase mb-1">
+                        <label className="block text-[9px] font-mono text-foreground/30 uppercase mb-1">
                           Field Name (key)
                         </label>
                         <input
@@ -605,17 +605,17 @@ function FieldsEditorModal({
                           value={field.field_name}
                           onChange={(e) => updateField(idx, "field_name", e.target.value)}
                           placeholder="college"
-                          className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-green-400/40 transition-colors placeholder:text-white/15"
+                          className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-accent/40 transition-colors placeholder:text-foreground/15"
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-mono text-white/30 uppercase mb-1">
+                        <label className="block text-[9px] font-mono text-foreground/30 uppercase mb-1">
                           Type
                         </label>
                         <select
                           value={field.field_type}
                           onChange={(e) => updateField(idx, "field_type", e.target.value)}
-                          className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-green-400/40 transition-colors"
+                          className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-accent/40 transition-colors"
                         >
                           <option value="text" className="bg-[#0a0c0f]">Text</option>
                           <option value="email" className="bg-[#0a0c0f]">Email</option>
@@ -626,7 +626,7 @@ function FieldsEditorModal({
                     </div>
 
                     <div>
-                      <label className="block text-[9px] font-mono text-white/30 uppercase mb-1">
+                      <label className="block text-[9px] font-mono text-foreground/30 uppercase mb-1">
                         Prompt (shown to user)
                       </label>
                       <input
@@ -634,7 +634,7 @@ function FieldsEditorModal({
                         value={field.prompt}
                         onChange={(e) => updateField(idx, "prompt", e.target.value)}
                         placeholder="Enter your college (or type none)"
-                        className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-green-400/40 transition-colors placeholder:text-white/15"
+                        className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-accent/40 transition-colors placeholder:text-foreground/15"
                       />
                     </div>
 
@@ -644,15 +644,15 @@ function FieldsEditorModal({
                           type="checkbox"
                           checked={field.required}
                           onChange={(e) => updateField(idx, "required", e.target.checked)}
-                          className="w-3.5 h-3.5 rounded border-white/20 bg-white/5 accent-green-400"
+                          className="w-3.5 h-3.5 rounded border-foreground/20 bg-foreground/5 accent-green-400"
                         />
-                        <span className="text-[10px] font-mono text-white/40">Required</span>
+                        <span className="text-[10px] font-mono text-foreground/40">Required</span>
                       </label>
                     </div>
 
                     {field.field_type === "select" && (
                       <div>
-                        <label className="block text-[9px] font-mono text-white/30 uppercase mb-1">
+                        <label className="block text-[9px] font-mono text-foreground/30 uppercase mb-1">
                           Options (comma-separated)
                         </label>
                         <input
@@ -666,7 +666,7 @@ function FieldsEditorModal({
                             )
                           }
                           placeholder="Option 1, Option 2, Option 3"
-                          className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-green-400/40 transition-colors placeholder:text-white/15"
+                          className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-xs font-mono rounded-md px-2.5 py-2 outline-none focus:border-accent/40 transition-colors placeholder:text-foreground/15"
                         />
                       </div>
                     )}
@@ -676,7 +676,7 @@ function FieldsEditorModal({
 
               <button
                 onClick={addField}
-                className="w-full py-2.5 border border-dashed border-white/[0.1] hover:border-green-400/30 text-white/30 hover:text-green-400/60 text-xs font-mono rounded-lg transition-colors cursor-pointer mb-6"
+                className="w-full py-2.5 border border-dashed border-foreground/[0.1] hover:border-accent/30 text-foreground/30 hover:text-accent/60 text-xs font-mono rounded-lg transition-colors cursor-pointer mb-6"
               >
                 + Add Field
               </button>
@@ -684,14 +684,14 @@ function FieldsEditorModal({
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={onClose}
-                  className="px-5 py-2.5 border border-white/[0.1] text-white/40 text-xs font-mono rounded-lg hover:text-white/60 transition-colors cursor-pointer"
+                  className="px-5 py-2.5 border border-foreground/[0.1] text-foreground/40 text-xs font-mono rounded-lg hover:text-foreground/60 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="px-6 py-2.5 bg-green-400 text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2.5 bg-accent text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? "Saving..." : "Save Fields →"}
                 </button>
@@ -745,7 +745,7 @@ function TeamPanel() {
         <div
           className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-lg font-mono text-sm border backdrop-blur-md ${
             feedback.type === "success"
-              ? "bg-green-400/10 border-green-400/30 text-green-400"
+              ? "bg-accent/10 border-accent/30 text-accent"
               : "bg-red-400/10 border-red-400/30 text-red-400"
           }`}
         >
@@ -755,15 +755,15 @@ function TeamPanel() {
 
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-mono text-lg text-white/60">
-          Team Members <span className="text-white/20">({members.length})</span>
+        <h2 className="font-mono text-lg text-foreground/60">
+          Team Members <span className="text-foreground/20">({members.length})</span>
         </h2>
         <button
           onClick={() => {
             setEditingMember(null);
             setShowForm(true);
           }}
-          className="px-5 py-2.5 bg-green-400 text-black font-mono text-xs font-bold rounded-lg hover:bg-green-300 transition-colors cursor-pointer"
+          className="px-5 py-2.5 bg-accent text-black font-mono text-xs font-bold rounded-lg hover:bg-green-300 transition-colors cursor-pointer"
         >
           + Add Member
         </button>
@@ -790,22 +790,22 @@ function TeamPanel() {
       {/* Members grid */}
       {loading ? (
         <div className="text-center py-20">
-          <div className="inline-block w-6 h-6 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin" />
+          <div className="inline-block w-6 h-6 border-2 border-accent/30 border-t-green-400 rounded-full animate-spin" />
         </div>
       ) : members.length === 0 ? (
-        <div className="text-center py-20 border border-white/[0.06] rounded-xl bg-white/[0.02]">
-          <p className="text-white/20 font-mono text-sm">No team members yet. Add your first one!</p>
+        <div className="text-center py-20 border border-foreground/[0.06] rounded-xl bg-foreground/[0.02]">
+          <p className="text-foreground/20 font-mono text-sm">No team members yet. Add your first one!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {members.map((member) => (
             <div
               key={member.id}
-              className="p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+              className="p-5 rounded-xl border border-foreground/[0.06] bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors"
             >
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="w-12 h-12 rounded-full overflow-hidden border border-white/[0.1] shrink-0 bg-white/[0.05]">
+                <div className="w-12 h-12 rounded-full overflow-hidden border border-foreground/[0.1] shrink-0 bg-foreground/[0.05]">
                   {member.image_url ? (
                     <img
                       src={member.image_url}
@@ -813,25 +813,25 @@ function TeamPanel() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/20 text-lg font-bold">
+                    <div className="w-full h-full flex items-center justify-center text-foreground/20 text-lg font-bold">
                       {member.name[0]}
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-mono text-sm font-bold text-white truncate">{member.name}</h3>
-                  <p className="text-[10px] text-green-400/60 font-mono uppercase tracking-wider">{member.role}</p>
+                  <h3 className="font-mono text-sm font-bold text-foreground truncate">{member.name}</h3>
+                  <p className="text-[10px] text-accent/60 font-mono uppercase tracking-wider">{member.role}</p>
                   <p className="text-[10px] text-cyan-400/50 font-mono uppercase tracking-wider mt-0.5">{member.department}</p>
                   {member.description && (
-                    <p className="text-xs text-white/30 mt-1 line-clamp-2">{member.description}</p>
+                    <p className="text-xs text-foreground/30 mt-1 line-clamp-2">{member.description}</p>
                   )}
 
                   {/* Social icons */}
                   <div className="flex gap-2 mt-2">
                     {Object.entries(member.socials || {}).map(([platform, url]) =>
                       url && url !== "#" ? (
-                        <span key={platform} className="text-[9px] font-mono text-white/20">
+                        <span key={platform} className="text-[9px] font-mono text-foreground/20">
                           {platform}
                         </span>
                       ) : null
@@ -846,14 +846,14 @@ function TeamPanel() {
                       setEditingMember(member);
                       setShowForm(true);
                     }}
-                    className="text-lg text-white/30 hover:text-green-400 transition-colors cursor-pointer"
+                    className="text-lg text-foreground/30 hover:text-accent transition-colors cursor-pointer"
                     title="Edit"
                   >
                     ✏️
                   </button>
                   <button
                     onClick={() => handleDelete(member.id, member.name)}
-                    className="text-lg text-white/30 hover:text-red-400 transition-colors cursor-pointer"
+                    className="text-lg text-foreground/30 hover:text-red-400 transition-colors cursor-pointer"
                     title="Delete"
                   >
                     🗑
@@ -915,16 +915,16 @@ function TeamMemberFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto bg-[#0a0c0f] border border-green-500/20 rounded-xl shadow-[0_0_100px_rgba(34,197,94,0.15)]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-white/[0.02] sticky top-0 z-10 backdrop-blur-md">
-          <h3 className="font-mono text-sm font-bold text-green-400">{initialData ? "✏️ EDIT_TEAM_MEMBER" : "+ ADD_TEAM_MEMBER"}</h3>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/10 bg-foreground/[0.02] sticky top-0 z-10 backdrop-blur-md">
+          <h3 className="font-mono text-sm font-bold text-accent">{initialData ? "✏️ EDIT_TEAM_MEMBER" : "+ ADD_TEAM_MEMBER"}</h3>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-white/40 hover:text-white/80 transition-colors cursor-pointer text-xs"
+            className="w-7 h-7 rounded-full bg-foreground/[0.05] hover:bg-foreground/[0.1] flex items-center justify-center text-foreground/40 hover:text-foreground/80 transition-colors cursor-pointer text-xs"
           >
             ✕
           </button>
@@ -939,19 +939,19 @@ function TeamMemberFormModal({
 
           {/* Image */}
           <div>
-            <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
               Photo
             </label>
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-white/[0.1] hover:border-green-400/30 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors group"
+              className="border-2 border-dashed border-foreground/[0.1] hover:border-accent/30 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors group"
             >
               {imagePreview ? (
                 <img src={imagePreview} alt="Preview" className="w-20 h-20 rounded-full object-cover" />
               ) : (
                 <>
                   <div className="text-2xl mb-1 group-hover:scale-110 transition-transform">👤</div>
-                  <p className="text-xs text-white/30 font-mono">Upload photo</p>
+                  <p className="text-xs text-foreground/30 font-mono">Upload photo</p>
                 </>
               )}
               <input
@@ -974,14 +974,14 @@ function TeamMemberFormModal({
           {/* Department & Hierarchy */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+              <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
                 Department
               </label>
               <select
                 name="department"
                 required
                 defaultValue={initialData?.department || ""}
-                className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors"
+                className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-accent/40 transition-colors"
               >
                 <option value="" disabled className="bg-[#0a0c0f]">Select department...</option>
                 <option value="core" className="bg-[#0a0c0f]">Core</option>
@@ -994,13 +994,13 @@ function TeamMemberFormModal({
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+              <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
                 Hierarchy Level
               </label>
               <select
                 name="hierarchy_level"
                 defaultValue={initialData?.hierarchy_level || ""}
-                className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors"
+                className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-accent/40 transition-colors"
               >
                 <option value="" className="bg-[#0a0c0f]">Associate (Default)</option>
                 <option value="president" className="bg-[#0a0c0f]">President / Vice President</option>
@@ -1014,7 +1014,7 @@ function TeamMemberFormModal({
 
           {/* Socials */}
           <div>
-            <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
               Social Links
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -1030,14 +1030,14 @@ function TeamMemberFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 border border-white/[0.1] text-white/40 text-xs font-mono rounded-lg hover:text-white/60 transition-colors cursor-pointer"
+              className="px-5 py-2.5 border border-foreground/[0.1] text-foreground/40 text-xs font-mono rounded-lg hover:text-foreground/60 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-green-400 text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
+              className="px-6 py-2.5 bg-accent text-black text-xs font-mono font-bold rounded-lg hover:bg-green-300 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {submitting ? (initialData ? "Updating..." : "Adding...") : (initialData ? "Update Member →" : "Add Member →")}
             </button>
@@ -1070,7 +1070,7 @@ function FormField({
   return (
     <div>
       {label && (
-        <label className="block text-[10px] font-mono font-bold text-white/40 uppercase tracking-wider mb-2">
+        <label className="block text-[10px] font-mono font-bold text-foreground/40 uppercase tracking-wider mb-2">
           {label}
         </label>
       )}
@@ -1080,7 +1080,7 @@ function FormField({
         placeholder={placeholder}
         required={required}
         defaultValue={defaultValue}
-        className="w-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-green-400/40 transition-colors placeholder:text-white/15"
+        className="w-full bg-foreground/[0.05] border border-foreground/[0.1] text-foreground/70 text-sm font-mono rounded-lg px-3 py-2.5 outline-none focus:border-accent/40 transition-colors placeholder:text-foreground/15"
       />
     </div>
   );

@@ -14,7 +14,7 @@ export const socialLinks: FooterLink[] = [
   },
   {
     label: "LINKEDIN",
-    href: "#", /* LinkedIn URL — add later */
+    href: "https://www.linkedin.com/company/web3-club-%E2%80%93-bmsit-m/", /* LinkedIn URL — add later */
   },
 ];
 

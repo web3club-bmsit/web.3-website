@@ -112,17 +112,17 @@ export default function Events() {
         <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-green-400/60 mb-3">
           // events &amp; competitions
         </p>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-3 leading-[1.1] tracking-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground mb-3 leading-[1.1] tracking-tight">
           What&apos;s happening{" "}
-          <span className="text-white/30">on-chain</span>
+          <span className="text-accent">on-chain</span>
         </h2>
-        <p className="text-sm sm:text-base text-white/35 max-w-lg leading-relaxed mb-10">
+        <p className="text-sm sm:text-base text-foreground/35 max-w-lg leading-relaxed mb-10">
           Hackathons, workshops, and challenges — built for students who ship
           on-chain. Expand a card for details, then register from the terminal.
         </p>
 
         {/* ── Tab bar (Upcoming / Past) ──────────────────────── */}
-        <div className="flex gap-1 p-1 rounded-lg bg-white/[0.04] border border-white/[0.06] w-fit mb-14">
+        <div className="flex gap-1 p-1 rounded-lg bg-foreground/[0.04] border border-foreground/[0.06] w-fit mb-14">
           {(["upcoming", "past"] as const).map((tab) => (
             <button
               key={tab}
@@ -130,7 +130,7 @@ export default function Events() {
               className={`font-mono text-xs font-semibold px-4 py-2 rounded-md transition-all duration-200 cursor-pointer ${
                 activeTab === tab
                   ? "bg-green-400/[0.12] text-green-400 border border-green-400/20"
-                  : "text-white/30 hover:text-white/50 border border-transparent"
+                  : "text-foreground/30 hover:text-foreground/50 border border-transparent"
               }`}
             >
               {tab === "upcoming"
@@ -229,7 +229,7 @@ export default function Events() {
                   ))
                 ) : (
                   <div className="text-center py-20">
-                    <p className="font-mono text-sm text-white/20">
+                    <p className="font-mono text-sm text-foreground/20">
                       No {activeTab} events.
                     </p>
                   </div>
