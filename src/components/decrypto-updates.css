@@ -1,0 +1,313 @@
+/* ═══════════════════════════════════════════════════════════════
+   DECRYPTO UPDATES — Section Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ROOT ── */
+.decrypto-root {
+  background: #202221;
+  color: #ffffff;
+  width: 100%;
+}
+
+/* ── TICKER STRIP ── */
+.decrypto-ticker-strip {
+  background: #202221;
+  border-top: 1px solid #2e2e2e;
+  border-bottom: 1px solid #2e2e2e;
+  padding: 9px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.decrypto-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: decryptoScroll 22s linear infinite;
+}
+
+.decrypto-ticker-item {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+}
+
+.decrypto-ticker-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #cdef33;
+  margin: 0 18px;
+  flex-shrink: 0;
+}
+
+@keyframes decryptoScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── MAIN GRID ── */
+.decrypto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── LEFT COLUMN ── */
+.decrypto-left {
+  padding: 60px 40px;
+  border-right: 1px solid #2e2e2e;
+}
+
+.decrypto-heading {
+  font-size: 80px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+  line-height: 0.88;
+  margin: 0 0 28px 0;
+}
+
+.decrypto-heading-white {
+  color: #ffffff;
+}
+
+.decrypto-heading-accent {
+  color: #cdef33;
+}
+
+.decrypto-subtext {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.7;
+  max-width: 320px;
+  margin: 0 0 24px 0;
+}
+
+.decrypto-date-badge {
+  display: inline-block;
+  border: 1px solid #cdef33;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 11px;
+  color: #cdef33;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.decrypto-venue-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.decrypto-blink-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #cdef33;
+  flex-shrink: 0;
+  animation: decryptoPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes decryptoPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.decrypto-venue-text {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.decrypto-learn-label {
+  font-size: 10px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-top: 36px;
+  margin-bottom: 12px;
+}
+
+/* ── LEARN CARDS ── */
+.decrypto-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.decrypto-card {
+  background: #2a2b2a;
+  border: 1px solid #2e2e2e;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.decrypto-card--accent {
+  border-color: #cdef33;
+}
+
+.decrypto-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.decrypto-card-sub {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── RIGHT COLUMN ── */
+.decrypto-right {
+  padding: 60px 40px;
+}
+
+/* ── DAY TABS ── */
+.decrypto-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.decrypto-tab {
+  border: 1px solid #2e2e2e;
+  color: #888;
+  background: transparent;
+  border-radius: 20px;
+  padding: 7px 18px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-family: inherit;
+}
+
+.decrypto-tab--active {
+  background: #cdef33;
+  color: #202221;
+  font-weight: 700;
+  border-color: #cdef33;
+}
+
+/* ── PANEL HEADER ── */
+.decrypto-panel-header {
+  margin-bottom: 24px;
+}
+
+.decrypto-panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0 0 4px 0;
+}
+
+.decrypto-panel-date {
+  font-size: 11px;
+  color: #cdef33;
+  text-transform: uppercase;
+  margin: 0 0 2px 0;
+}
+
+.decrypto-panel-venue {
+  font-size: 11px;
+  color: #555;
+  margin: 0;
+}
+
+/* ── TIMELINE ── */
+.decrypto-timeline {
+  border-left: 1px solid #2e2e2e;
+  margin-left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.decrypto-slot {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 0;
+  position: relative;
+}
+
+.decrypto-slot-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2e2e2e;
+  flex-shrink: 0;
+  margin-left: -4px;
+  margin-top: 3px;
+}
+
+.decrypto-slot-dot--hl {
+  background: #cdef33;
+}
+
+.decrypto-slot-time {
+  width: 80px;
+  font-size: 10px;
+  color: #555;
+  flex-shrink: 0;
+  margin-left: 12px;
+  padding-top: 1px;
+}
+
+.decrypto-slot-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.decrypto-slot-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.decrypto-slot-sub {
+  font-size: 10px;
+  color: #666;
+  margin: 3px 0 0 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .decrypto-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .decrypto-left {
+    border-right: none;
+    border-bottom: 1px solid #2e2e2e;
+    padding: 40px 20px;
+  }
+
+  .decrypto-right {
+    padding: 40px 20px;
+  }
+
+  .decrypto-heading {
+    font-size: 52px;
+  }
+}
