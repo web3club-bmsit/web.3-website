@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -115,27 +114,11 @@ export default function Navbar() {
           }`}
       >
         <div
-          className={`mx-auto transition-all duration-500 ease-out flex items-center justify-between px-6 py-2 rounded-full border shadow-2xl backdrop-blur-xl ${scrolled
+          className={`mx-auto transition-all duration-500 ease-out flex items-center justify-center gap-6 px-6 py-2 rounded-full border shadow-2xl backdrop-blur-xl ${scrolled
               ? "max-w-4xl bg-nav-surface border-nav-border"
               : "max-w-5xl bg-black/10 border-white/10"
             }`}
         >
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative w-9 h-9 flex items-center justify-center">
-              <Image
-                src="/logos/clubLogo-white.png"
-                alt="WEB.3 BMSIT"
-                width={28}
-                height={28}
-                className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(74,222,128,0.5)] ${!scrolled && !isHero && resolvedTheme === 'light' ? 'invert' : isHero ? '' : (resolvedTheme === 'light' ? 'invert' : '')}`}
-              />
-            </div>
-            <span className={`font-mono font-bold text-xs tracking-widest transition-colors uppercase ${isHero ? 'text-accent' : scrolled ? 'text-accent' : 'text-accent'}`}>
-              WEB.3
-            </span>
-          </Link>
-
           {/* Desktop tabs */}
           <ul className="hidden md:flex items-center gap-1 list-none m-0 p-0">
             {NAV_TABS.map((tab) => (

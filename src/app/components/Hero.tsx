@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { useTheme } from "next-themes";
 import * as THREE from "three";
 import { gsap } from "gsap";
@@ -43,7 +44,7 @@ export default function Hero() {
   useEffect(() => {
     const bgColor = isDark ? 0x202221 : 0xd9d9d9;
     const accentColor = 0xcdef33;
-    
+
     if (sceneRef.current) {
       sceneRef.current.background = new THREE.Color(bgColor);
       if (sceneRef.current.fog) {
@@ -70,7 +71,7 @@ export default function Hero() {
     if (!el) return;
     const len = finalText.length;
     const t0 = performance.now();
-    
+
     const tick = () => {
       const p = Math.min((performance.now() - t0) / duration, 1);
       const revealedCount = Math.floor(p * len);
@@ -136,7 +137,7 @@ export default function Hero() {
     scene.add(hoverLight);
 
     // ── SHADERS & OBJECTS ──
-    
+
     // ETH — Iridescent Morphing Octahedron
     const ethGeo = new THREE.IcosahedronGeometry(1.4, 4);
     const ethMat = new THREE.ShaderMaterial({
@@ -292,7 +293,7 @@ export default function Hero() {
     const setAct = (i: number) => {
       if (i === currentAct) return;
       currentAct = i;
-      
+
       const acts = document.querySelectorAll(".hero-act");
       acts.forEach((el, idx) => {
         el.classList.toggle("opacity-100", idx === i);
@@ -313,7 +314,7 @@ export default function Hero() {
       onUpdate: (self) => {
         scrollProgress = self.progress;
         if (progressRef.current) progressRef.current.style.width = `${scrollProgress * 100}%`;
-        
+
         // FADE OUT & HIDE LOGIC:
         // Ensures the hero section ceases to exist once passed.
         if (fixedLayerRef.current) {
@@ -322,11 +323,11 @@ export default function Hero() {
           fixedLayerRef.current.style.visibility = scrollProgress >= 1.0 ? "hidden" : "visible";
           fixedLayerRef.current.style.pointerEvents = scrollProgress >= 1.0 ? "none" : "auto";
         }
-        
+
         if (scrollProgress < 0.25) setAct(0);
         else if (scrollProgress < 0.50) setAct(1);
         else if (scrollProgress < 0.75) setAct(2);
-        else if (scrollProgress < 1.0)  setAct(3);
+        else if (scrollProgress < 1.0) setAct(3);
         else setAct(-1); // Hide act text fully at the end
       },
     });
@@ -400,8 +401,8 @@ export default function Hero() {
         for (let i = 0; i < P_COUNT; i++) {
           const i3 = i * 3;
           pa[i3] += Math.sin(t * 0.08 + i * 0.11) * 0.0015;
-          pa[i3+1] += Math.cos(t * 0.07 + i * 0.07) * 0.0015;
-          pa[i3+2] += Math.sin(t * 0.09 + i * 0.04) * 0.0015;
+          pa[i3 + 1] += Math.cos(t * 0.07 + i * 0.07) * 0.0015;
+          pa[i3 + 2] += Math.sin(t * 0.09 + i * 0.04) * 0.0015;
         }
       } else if (scrollProgress < 0.75) {
         pMat.opacity += (0.55 - pMat.opacity) * 0.04;
@@ -416,8 +417,8 @@ export default function Hero() {
           const ty = nd.y + Math.cos(i * 0.13 + t * 0.4) * jit;
           const tz = nd.z + Math.sin(i * 0.07 + t * 0.4) * jit;
           pa[i3] += (tx - pa[i3]) * spd;
-          pa[i3+1] += (ty - pa[i3+1]) * spd;
-          pa[i3+2] += (tz - pa[i3+2]) * spd;
+          pa[i3 + 1] += (ty - pa[i3 + 1]) * spd;
+          pa[i3 + 2] += (tz - pa[i3 + 2]) * spd;
         }
       } else {
         pMat.opacity += (0.45 - pMat.opacity) * 0.04;
@@ -429,8 +430,8 @@ export default function Hero() {
           const ty = nd.y + Math.cos(i * 0.13 + t * 0.25) * jit;
           const tz = nd.z + Math.sin(i * 0.07 + t * 0.25) * jit;
           pa[i3] += (tx - pa[i3]) * 0.015;
-          pa[i3+1] += (ty - pa[i3+1]) * 0.015;
-          pa[i3+2] += (tz - pa[i3+2]) * 0.015;
+          pa[i3 + 1] += (ty - pa[i3 + 1]) * 0.015;
+          pa[i3 + 2] += (tz - pa[i3 + 2]) * 0.015;
         }
       }
       pGeo.attributes.position.needsUpdate = true;
@@ -469,9 +470,21 @@ export default function Hero() {
       <div ref={fixedLayerRef} className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300">
         {/* Background Overlay */}
         <div className="absolute inset-0 z-[1] transition-colors duration-500 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(217,217,217,0.85)_100%)] dark:bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(32,34,33,0.85)_100%)]" />
-        
+
         {/* Progress Bar */}
         <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-accent z-30 transition-[width] duration-75" style={{ width: "0%" }} />
+
+        {/* Hero Logo — top-left, large */}
+        <div className="absolute top-0 left-0 z-20 pointer-events-none">
+          <Image
+            src={isDark ? "/logos/club-dark.svg" : "/logos/club-light.svg"}
+            alt="WEB.3 BMSIT"
+            width={220}
+            height={150}
+            className="object-contain"
+            priority
+          />
+        </div>
 
         {/* Canvas */}
         <canvas ref={canvasRef} className="absolute top-0 left-0 z-[1] transition-opacity duration-300" />

@@ -22,6 +22,7 @@ const architypeFont = localFont({
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import GlobalCursor from "@/components/GlobalCursor";
+import PreloaderWrapper from "@/components/PreloaderWrapper";
 
 export default function RootLayout({
   children,
@@ -37,8 +38,10 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <GlobalCursor />
-          {children}
-          <Footer />
+          <PreloaderWrapper>
+            {children}
+            <Footer />
+          </PreloaderWrapper>
         </ThemeProvider>
       </body>
     </html>

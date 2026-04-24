@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { socialLinks } from "@/data/footerData";
 
 const CUBES = [
   { size: 80, left: 15, top: 30, z: -200, rx: 35, ry: 45, delay: 0, duration: 18 },
@@ -256,12 +257,11 @@ export default function Footer() {
 
           {/* Right Column */}
           <div className="flex gap-8 items-center">
-            <Link href="https://instagram.com" target="_blank" className="link-hover text-base md:text-lg font-medium tracking-wide">
-              Instagram
-            </Link>
-            <Link href="https://linkedin.com" target="_blank" className="link-hover text-base md:text-lg font-medium tracking-wide">
-              LinkedIn
-            </Link>
+            {socialLinks.map((link) => (
+              <Link key={link.label} href={link.href} target="_blank" className="link-hover text-base md:text-lg font-medium tracking-wide capitalize">
+                {link.label.toLowerCase()}
+              </Link>
+            ))}
           </div>
 
         </div>
