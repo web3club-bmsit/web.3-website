@@ -43,7 +43,7 @@ const lineColor: Record<string, string> = {
   success: "text-green-400",
   input: "text-lime-400",
   highlight: "text-green-400 font-black text-xl py-2 tracking-widest bg-green-400/10 px-3 border-l-4 border-green-400 w-fit rounded-r-md my-2",
-  ascii: "text-green-400/60 font-bold leading-none mb-2"
+  ascii: "text-green-400/60 font-bold leading-none mb-2 text-[8px] sm:text-sm"
 };
 
 export default function RegistrationTerminal({ eventId, eventName, onClose }: Props) {
@@ -380,7 +380,7 @@ export default function RegistrationTerminal({ eventId, eventName, onClose }: Pr
           {lines.map((l, i) => (
             <div
               key={i}
-              className={`leading-relaxed whitespace-pre-wrap ${lineColor[l.type]}`}
+              className={`leading-relaxed ${l.type === 'ascii' ? 'whitespace-pre overflow-x-auto' : 'whitespace-pre-wrap'} ${lineColor[l.type]}`}
             >
               {l.text}
             </div>
