@@ -474,7 +474,17 @@ export default function Hero() {
         {/* Progress Bar */}
         <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-accent z-30 transition-[width] duration-75" style={{ width: "0%" }} />
 
-       
+        {/* Hero Logo — top-left, large */}
+        <div className="absolute top-0 left-0 z-20 pointer-events-none">
+          <Image
+            src={isDark ? "/logos/club-dark.svg" : "/logos/club-light.svg"}
+            alt="WEB.3 BMSIT"
+            width={220}
+            height={150}
+            className="object-contain"
+            priority
+          />
+        </div>
 
         {/* Canvas */}
         <canvas ref={canvasRef} className="absolute top-0 left-0 z-[1] transition-opacity duration-300" />
