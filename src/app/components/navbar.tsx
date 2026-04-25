@@ -63,7 +63,7 @@ export default function Navbar() {
             .select("role")
             .eq("id", currentUser.id)
             .single();
-          setIsAdmin(profile?.role === "admin");
+          setIsAdmin(profile?.role == "admin");
         } else {
           setIsAdmin(false);
         }
