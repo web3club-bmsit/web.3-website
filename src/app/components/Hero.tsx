@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -506,9 +507,12 @@ export default function Hero() {
                 <div className="flex flex-col items-center">
                   <h1 id={t.id} className="text-[clamp(2.4rem,10vw,8rem)] font-logo text-center uppercase tracking-tighter leading-[0.9] text-[#202221] dark:text-[#D9D9D9]" />
                   <p id="txt3sub" className="mt-4 text-[clamp(0.55rem,1.4vw,0.9rem)] font-semibold uppercase tracking-[0.25em] text-foreground/30 text-center" />
-                  <button className="pointer-events-auto mt-12 px-10 py-4 bg-accent text-background font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:scale-105 transition-transform shadow-[0_0_20px_rgba(74,222,128,0.25)] ring-1 ring-accent/20 active:scale-95">
+                  <Link 
+                    href="/events"
+                    className="pointer-events-auto mt-12 px-10 py-4 bg-accent text-background font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:scale-105 transition-transform shadow-[0_0_20px_rgba(74,222,128,0.25)] ring-1 ring-accent/20 active:scale-95 inline-block"
+                  >
                     Join the Chain →
-                  </button>
+                  </Link>
                 </div>
               ) : (
                 <p id={t.id} className="text-[clamp(1.1rem,4vw,2.4rem)] font-bold text-center max-w-2xl leading-[1.2] text-foreground/90 drop-shadow-sm" />
