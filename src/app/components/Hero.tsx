@@ -103,11 +103,12 @@ export default function Hero() {
       smoothWheel: true,
     });
 
+    let lenisRafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      lenisRafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    lenisRafId = requestAnimationFrame(raf);
 
     // ── THREE.JS SETUP ──
     const scene = new THREE.Scene();
@@ -444,9 +445,9 @@ export default function Hero() {
       grid.material.opacity = 0.04 + Math.sin(t * 0.3) * 0.01;
 
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
+      animateRafId = requestAnimationFrame(animate);
     };
-    animate();
+    let animateRafId = requestAnimationFrame(animate);
 
     // Resize
     const handleResize = () => {
@@ -461,6 +462,8 @@ export default function Hero() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(lenisRafId);
+      cancelAnimationFrame(animateRafId);
       ScrollTrigger.getAll().forEach(t => t.kill());
       lenis.destroy();
       renderer.dispose();
@@ -480,17 +483,6 @@ export default function Hero() {
         {/* Progress Bar */}
         <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-accent z-30 transition-[width] duration-75" style={{ width: "0%" }} />
 
-         {/* Hero Logo — top-left, large */}
-        <div className="absolute top-0 left-0 z-20 pointer-events-none">
-          <Image
-            src={isDark ? "/logos/club-dark.svg" : "/logos/club-light.svg"}
-            alt="WEB.3 BMSIT"
-            width={220}
-            height={150}
-            className="object-contain"
-            priority
-          />
-        </div>
 
         {/* Canvas */}
         <canvas ref={canvasRef} className="absolute top-0 left-0 z-[1] transition-opacity duration-300" />

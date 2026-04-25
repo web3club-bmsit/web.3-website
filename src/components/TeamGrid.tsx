@@ -82,7 +82,10 @@ export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
       ctx.clearRect(0, 0, W, H);
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-            // Animated grid lines — subtle, scrolling
+      
+      frameRef.current++;
+      
+      // Animated grid lines — subtle, scrolling
       const gridOffset = (frameRef.current * 0.3) % 32;
       ctx.strokeStyle = "rgba(205,239,51,0.028)";
       ctx.lineWidth = 0.5;

@@ -108,8 +108,9 @@ export default function Hero() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
-    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
-    requestAnimationFrame(raf);
+    let lenisRafId: number;
+    function raf(time: number) { lenis.raf(time); lenisRafId = requestAnimationFrame(raf); }
+    lenisRafId = requestAnimationFrame(raf);
 
     // ── THREE SETUP ──
     const scene = new THREE.Scene();
@@ -442,9 +443,9 @@ export default function Hero() {
       gridMat.opacity = (isDark ? 0.04 : 0.08) + Math.sin(t * 0.3) * 0.01;
 
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
+      animateRafId = requestAnimationFrame(animate);
     };
-    animate();
+    let animateRafId = requestAnimationFrame(animate);
 
     // Resize
     const handleResize = () => {
@@ -459,6 +460,8 @@ export default function Hero() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(lenisRafId);
+      cancelAnimationFrame(animateRafId);
       ScrollTrigger.getAll().forEach((t) => t.kill());
       lenis.destroy();
       renderer.dispose();
