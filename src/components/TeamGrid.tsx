@@ -37,13 +37,13 @@ type Particle = {
 
 export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
   const [selectedDept, setSelectedDept] = useState("all");
-  const filteredMembers = selectedDept === "all" 
-    ? members 
+  const filteredMembers = selectedDept === "all"
+    ? members
     : members.filter((m) => m.department?.toLowerCase() === selectedDept);
   const chunkedRows = chunkArray(filteredMembers, 3);
-  
+
   const departments = ["all", ...Array.from(new Set(members.map((m) => m.department?.toLowerCase() || "other")))];
-  
+
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [glitching, setGlitching] = useState(false);
   const glitchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -82,9 +82,9 @@ export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
       ctx.clearRect(0, 0, W, H);
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      
+
       frameRef.current++;
-      
+
       // Animated grid lines — subtle, scrolling
       const gridOffset = (frameRef.current * 0.3) % 32;
       ctx.strokeStyle = "rgba(205,239,51,0.028)";
@@ -167,7 +167,7 @@ export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
           }
         }
       }
-// Mouse proximity glow
+      // Mouse proximity glow
       if (mx > 0) {
         const grad = ctx.createRadialGradient(mx, my, 0, mx, my, 260);
         grad.addColorStop(0, "rgba(205,239,51,0.10)");
@@ -200,7 +200,7 @@ export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
       rafRef.current = requestAnimationFrame(draw);
     };
 
-draw();
+    draw();
     return () => {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(rafRef.current);
@@ -229,13 +229,13 @@ draw();
   };
 
   return (
-   <>
+    <>
 
       <section
         className="bg-background"
         style={{
           minHeight: "100vh",
-          paddingTop: "80px",
+          paddingTop: "170px",
           position: "relative",
           overflow: "hidden",
         }}
@@ -265,10 +265,10 @@ draw();
 
         {/* Hex decorations */}
         {[
-          { top: "8%",  left: "4%",  size: 160, delay: "0s"   },
+          { top: "8%", left: "4%", size: 160, delay: "0s" },
           { top: "62%", left: "88%", size: 110, delay: "1.5s" },
-          { top: "33%", left: "91%", size: 75,  delay: "0.8s" },
-          { top: "80%", left: "2%",  size: 85,  delay: "2s"   },
+          { top: "33%", left: "91%", size: 75, delay: "0.8s" },
+          { top: "80%", left: "2%", size: 85, delay: "2s" },
         ].map((h, i) => (
           <svg key={i} style={{
             position: "absolute", top: h.top, left: h.left,
@@ -277,23 +277,23 @@ draw();
             zIndex: 1, pointerEvents: "none",
           }} viewBox="0 0 100 100">
             <polygon points="50,2 93,26 93,74 50,98 7,74 7,26"
-              fill="none" stroke="var(--accent)" strokeWidth="1"/>
+              fill="none" stroke="var(--accent)" strokeWidth="1" />
           </svg>
         ))}
 
         {/* Scanline */}
-        <div style={{ position:"absolute", inset:0, pointerEvents:"none", zIndex:1, overflow:"hidden" }}>
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, overflow: "hidden" }}>
           <div style={{
-            position:"absolute", left:0, right:0, height:"2px",
-            background:"linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent)",
-            animation:"scanline 9s linear infinite",
+            position: "absolute", left: 0, right: 0, height: "2px",
+            background: "linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent)",
+            animation: "scanline 9s linear infinite",
           }} />
         </div>
 
         {/* Live data ticker at top */}
         <div style={{
           position: "absolute",
-          top: 0,
+          top: "110px",
           left: 0,
           right: 0,
           height: "28px",
@@ -311,16 +311,16 @@ draw();
             letterSpacing: "0.1em",
           }}>
             {Array.from({ length: 2 }, () =>
-              `◈ PROTOCOL_v3.1.4 ◈ NODES_ACTIVE: ${members.length.toString().padStart(2,"0")} ◈ CHAIN_STATUS: NOMINAL ◈ UPTIME: 99.97% ◈ BLOCK_HEIGHT: 8,421,337 ◈ LATENCY: 12ms ◈ SYNC: COMPLETE ◈ CONTRIBUTORS: VERIFIED ◈ `
+              `◈ PROTOCOL_v3.1.4 ◈ NODES_ACTIVE: ${members.length.toString().padStart(2, "0")} ◈ CHAIN_STATUS: NOMINAL ◈ UPTIME: 99.97% ◈ BLOCK_HEIGHT: 8,421,337 ◈ LATENCY: 12ms ◈ SYNC: COMPLETE ◈ CONTRIBUTORS: VERIFIED ◈ `
             ).join("")}
           </div>
         </div>
 
         {/* ── HEADING ── */}
         <div
-          style={{ position:"relative", zIndex:2, textAlign:"center", padding:"28px 24px 64px" }}
+          style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "28px 24px 64px" }}
           onMouseMove={handleHeadingMove}
-          onMouseLeave={() => setTilt({ x:0, y:0 })}
+          onMouseLeave={() => setTilt({ x: 0, y: 0 })}
           onClick={triggerGlitch}
         >
           {/* Main heading — no tag above it */}
@@ -334,11 +334,11 @@ draw();
             {glitching && (
               <>
                 <div className="glitch-layer-1" aria-hidden="true"
-                  style={{ fontFamily:"'Syne',sans-serif", fontSize:"clamp(52px,8vw,96px)", fontWeight:800 }}>
+                  style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(52px,8vw,96px)", fontWeight: 800 }}>
                   OUR TEAM
                 </div>
                 <div className="glitch-layer-2" aria-hidden="true"
-                  style={{ fontFamily:"'Syne',sans-serif", fontSize:"clamp(52px,8vw,96px)", fontWeight:800 }}>
+                  style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(52px,8vw,96px)", fontWeight: 800 }}>
                   OUR TEAM
                 </div>
               </>
@@ -379,9 +379,9 @@ draw();
           </p>
 
           <div style={{
-            width:"80px", height:"1px", margin:"20px auto 0",
-            background:"linear-gradient(to right, transparent, var(--accent), transparent)",
-            animation:"fadeUp 0.8s 1s cubic-bezier(.22,1,.36,1) both",
+            width: "80px", height: "1px", margin: "20px auto 0",
+            background: "linear-gradient(to right, transparent, var(--accent), transparent)",
+            animation: "fadeUp 0.8s 1s cubic-bezier(.22,1,.36,1) both",
           }} />
         </div>
 
@@ -431,7 +431,7 @@ draw();
         </div>
 
         {/* Grid */}
-        <div style={{ position:"relative", zIndex:2, padding:"0 24px 120px", maxWidth:"1100px", margin:"0 auto" }}>
+        <div style={{ position: "relative", zIndex: 2, padding: "0 24px 120px", maxWidth: "1100px", margin: "0 auto" }}>
           {chunkedRows.map((row, rowIdx) => (
             <RevealRow
               key={rowIdx}
@@ -459,8 +459,8 @@ draw();
         }}>
           {[
             { label: "NETWORK", value: "MAINNET" },
-            { label: "STATUS",  value: "● LIVE"  },
-            { label: "EPOCH",   value: "0x1A3F"  },
+            { label: "STATUS", value: "● LIVE" },
+            { label: "EPOCH", value: "0x1A3F" },
           ].map(({ label, value }) => (
             <div key={label} style={{
               fontFamily: "'IBM Plex Mono', monospace",
@@ -475,7 +475,7 @@ draw();
           ))}
         </div>
       </section>
-  </>
+    </>
   );
 }
 
@@ -491,12 +491,12 @@ function RevealRow({
     <div
       ref={ref}
       className={`row-reveal${inView ? " visible" : ""}`}
-      style={{ transitionDelay:`${rowIdx * 0.08}s`, marginBottom:"32px" }}
+      style={{ transitionDelay: `${rowIdx * 0.08}s`, marginBottom: "32px" }}
     >
       <div style={{
-        display:"grid",
-        gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",
-        gap:"20px",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: "20px",
       }}>
         {row.map((member, cardIdx) => (
           <div
@@ -528,7 +528,7 @@ function MemberCardWrapper({
     <div
       style={{ position: "relative", height: "100%" }}
     >
-      <MemberCard 
+      <MemberCard
         name={member.name}
         role={`${member.role} | ${member.department}`}
         description={member.description || ""}
