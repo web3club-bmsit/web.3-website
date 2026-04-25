@@ -23,6 +23,7 @@ const architypeFont = localFont({
 import { ThemeProvider } from "@/components/ThemeProvider";
 import GlobalCursor from "@/components/GlobalCursor";
 import PreloaderWrapper from "@/components/PreloaderWrapper";
+import Navbar from "@/app/components/navbar";
 
 export default function RootLayout({
   children,
@@ -39,6 +40,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <GlobalCursor />
           <PreloaderWrapper>
+            <Navbar />
             {children}
             <Footer />
           </PreloaderWrapper>

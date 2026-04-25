@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import Navbar from '@/app/components/navbar'
 import AdminDashboard from './AdminDashboard'
 
 export default async function AdminPage() {
@@ -27,7 +26,6 @@ export default async function AdminPage() {
       {/* background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.05),transparent_50%)]" />
 
-      <Navbar />
       <AdminDashboard />
     </main>
   )

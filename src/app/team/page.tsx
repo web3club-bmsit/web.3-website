@@ -1,4 +1,3 @@
-import Navbar from "../components/navbar";
 import TeamGrid from "@/components/TeamGrid";
 
 import { getTeamMembers } from "@/app/actions/admin";
@@ -8,7 +7,6 @@ export default async function TeamPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
       <div className="pt-20">
         <TeamGrid members={members} />
       </div>
