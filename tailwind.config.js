@@ -6,6 +6,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        accent: "#CDEF33",
+      },
       keyframes: {
         loading: {
           "0%": { transform: "translateX(-100%)" },

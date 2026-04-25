@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -114,13 +115,36 @@ export default function Navbar() {
           }`}
       >
         <div
-          className={`mx-auto transition-all duration-500 ease-out flex items-center justify-center gap-6 px-6 py-2 rounded-full border shadow-2xl backdrop-blur-xl ${scrolled
+          className={`mx-auto transition-all duration-500 ease-out flex items-center justify-between gap-6 px-6 py-2.5 rounded-full border shadow-2xl backdrop-blur-xl overflow-hidden ${scrolled
             ? "max-w-4xl bg-nav-surface border-nav-border"
             : "max-w-5xl bg-black/10 border-white/10"
             }`}
         >
-          {/* Desktop tabs */}
-          <ul className="hidden md:flex items-center gap-1 list-none m-0 p-0">
+          {/* Hamburger (Now on Left) */}
+          <button
+            className="lg:hidden flex flex-col gap-1.5 p-1 bg-transparent border-none cursor-pointer"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+          >
+            <span className={`block w-5 h-0.5 rounded transition-all duration-300 ${menuOpen ? "translate-y-2 rotate-45" : ""} ${isHero || resolvedTheme === 'dark' ? 'bg-white' : 'bg-black'}`} />
+            <span className={`block w-5 h-0.5 rounded transition-all duration-300 ${menuOpen ? "opacity-0" : ""} ${isHero || resolvedTheme === 'dark' ? 'bg-white' : 'bg-black'}`} />
+            <span className={`block w-5 h-0.5 rounded transition-all duration-300 ${menuOpen ? "-translate-y-2 -rotate-45" : ""} ${isHero || resolvedTheme === 'dark' ? 'bg-white' : 'bg-black'}`} />
+          </button>
+          
+          {/* Logo (Centered) */}
+          <Link href="/" className="flex items-center group">
+            <div className={`flex flex-col items-center justify-center transition-all duration-300 group-hover:scale-105 ${isHero || resolvedTheme === 'dark' ? 'text-white' : 'text-black'}`}>
+              <span className="text-sm font-black tracking-tighter uppercase leading-none">
+                WEB.3
+              </span>
+              <span className="text-[7px] font-bold tracking-[0.3em] uppercase opacity-40 leading-none mt-0.5">
+                BMSIT
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop tabs (Hidden on mobile) */}
+          <ul className="hidden lg:flex items-center gap-1 list-none m-0 p-0">
             {NAV_TABS.map((tab) => (
               <li key={tab.label}>
                 <Link
@@ -139,7 +163,6 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-
             {isAdmin && (
               <li>
                 <Link
@@ -162,7 +185,7 @@ export default function Navbar() {
           </ul>
 
           <div className="flex items-center gap-3">
-            {/* Theme Toggle */}
+            {/* Theme Toggle (Now on Right) */}
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-full transition-all duration-300 ${isHero || resolvedTheme === "dark" ? "text-white/70 hover:text-white hover:bg-white/10" : "text-black/70 hover:text-black hover:bg-black/10"
@@ -173,7 +196,7 @@ export default function Navbar() {
             </button>
 
             {/* Auth State (Desktop) */}
-            <div className="hidden md:flex items-center gap-3 border-l border-white/10 pl-3 ml-1">
+            <div className="hidden lg:flex items-center gap-3 border-l border-white/10 pl-3 ml-1">
               {user ? (
                 <div className="flex items-center gap-2">
                   <div className="flex flex-col items-end">
@@ -202,24 +225,13 @@ export default function Navbar() {
                 </button>
               )}
             </div>
-
-            {/* Hamburger */}
-            <button
-              className="md:hidden flex flex-col gap-1.5 p-1 bg-transparent border-none cursor-pointer"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-label="Toggle menu"
-            >
-              <span className={`block w-5 h-0.5 bg-accent rounded transition-all duration-300 ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
-              <span className={`block w-5 h-0.5 bg-accent rounded transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-              <span className={`block w-5 h-0.5 bg-accent rounded transition-all duration-300 ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
-            </button>
           </div>
         </div>
       </nav>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-b border-accent/10 flex flex-col px-6 py-6 gap-3">
+        <div className="lg:hidden fixed top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-b border-accent/10 flex flex-col px-6 py-6 gap-3">
           {NAV_TABS.map((tab) => (
             <Link
               key={tab.label}
