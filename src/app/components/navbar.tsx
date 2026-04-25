@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
 import { LogIn, LogOut, User as UserIcon, ShieldAlert, Loader2, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -53,7 +53,7 @@ export default function Navbar() {
     getUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
+      async (_: AuthChangeEvent, session: Session | null) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
 
