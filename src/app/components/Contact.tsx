@@ -16,7 +16,7 @@ const CONTACTS = [
   {
     label: "Instagram",
     value: "@web.3.bmsit",
-    href: "https://www.instagram.com/web.3.bmsit",
+    href: "https://www.instagram.com/web.3_bmsit",
   }
 ];
 
