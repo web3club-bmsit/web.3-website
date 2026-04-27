@@ -7,6 +7,11 @@ export default function GlobalCursor() {
   const pos = useRef({ x: -999, y: -999 });
   const raf = useRef<number>(0);
   const [mode, setMode] = useState<"default" | "pointer">("default");
+  const modeRef = useRef<"default" | "pointer">("default");
+
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   useEffect(() => {
     const move = (e: MouseEvent) => {
@@ -31,8 +36,8 @@ export default function GlobalCursor() {
 
     const animate = () => {
       if (cursorRef.current) {
-        cursorRef.current.style.left = pos.current.x + "px";
-        cursorRef.current.style.top = pos.current.y + "px";
+        const centerOffset = modeRef.current === "pointer" ? "translate(-30%, -10%)" : "translate(-50%, -50%)";
+        cursorRef.current.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) ${centerOffset}`;
       }
       raf.current = requestAnimationFrame(animate);
     };

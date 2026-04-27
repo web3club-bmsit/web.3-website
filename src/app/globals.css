@@ -124,15 +124,12 @@ body {
   initial-value: 0deg;
 }
 
-* {
-  cursor: none !important;
-}
-
 .custom-cursor {
   position: fixed;
+  left: 0;
+  top: 0;
   pointer-events: none;
   z-index: 999999;
-  transform: translate(-50%, -50%);
   transition: width 0.15s, height 0.15s, border-color 0.15s, background 0.15s;
   mix-blend-mode: difference;
 }
@@ -154,7 +151,6 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M8 2 L8 18 L11 15 L13 21 L15.5 20 L13.5 14 L17 14 Z' fill='%23fff' stroke='none'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-size: contain;
-  transform: translate(-30%, -10%);
 }
 
 .custom-cursor.mode-pointer::before,

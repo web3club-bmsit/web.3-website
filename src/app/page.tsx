@@ -1,4 +1,3 @@
-import Navbar from "./components/navbar";
 import Hero from "./components/Hero";
 import Events from "./components/events";
 import TeamGrid from "@/components/TeamGrid";
@@ -10,8 +9,6 @@ import DecryptoUpdates from "@/components/DecryptoUpdates";
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground relative overflow-hidden">
-      <Navbar />
-
       <Hero />
 
       {/* Events section */}

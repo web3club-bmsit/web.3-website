@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import * as THREE from "three";
@@ -15,7 +16,7 @@ if (typeof window !== "undefined") {
 }
 
 // ════════════════════════════════════════════════════════════
-//  CONSTANTS
+//  CONSTANTS .
 // ════════════════════════════════════════════════════════════
 const ACCENT = 0xcdef33;
 const BG = 0x202221;
@@ -32,7 +33,13 @@ const TEXTS = [
 
 export default function Hero() {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme !== "light";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted ? resolvedTheme !== "light" : true;
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const keyLightRef = useRef<THREE.PointLight | null>(null);
@@ -98,11 +105,12 @@ export default function Hero() {
       smoothWheel: true,
     });
 
+    let lenisRafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      lenisRafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    lenisRafId = requestAnimationFrame(raf);
 
     // ── THREE.JS SETUP ──
     const scene = new THREE.Scene();
@@ -439,9 +447,9 @@ export default function Hero() {
       grid.material.opacity = 0.04 + Math.sin(t * 0.3) * 0.01;
 
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
+      animateRafId = requestAnimationFrame(animate);
     };
-    animate();
+    let animateRafId = requestAnimationFrame(animate);
 
     // Resize
     const handleResize = () => {
@@ -456,6 +464,8 @@ export default function Hero() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(lenisRafId);
+      cancelAnimationFrame(animateRafId);
       ScrollTrigger.getAll().forEach(t => t.kill());
       lenis.destroy();
       renderer.dispose();

@@ -60,26 +60,7 @@ export default function MemberCard({
           // transition on background would fight animation — intentionally omitted
         }}
       >
-              <div
-          style={{
-            position: "absolute",
-            width: "32px",
-            height: "32px",
-            borderRadius: "50%",
-            border: "1.5px solid #CDEF33",
-            pointerEvents: "none",
-            zIndex: 100,
-            opacity: hovered ? 1 : 0,
-            transition: "opacity 0.15s",
-            transform: "translate(-50%, -50%)",
-            left: glow.x,
-            top: glow.y,
-            boxShadow: "0 0 10px rgba(205,239,51,0.45), inset 0 0 6px rgba(205,239,51,0.1)",
-          }}
-        >
-          <div style={{ position:"absolute", top:"50%", left:"6px", right:"6px", height:"1px", background:"#CDEF33", marginTop:"-0.5px" }} />
-          <div style={{ position:"absolute", left:"50%", top:"6px", bottom:"6px", width:"1px", background:"#CDEF33", marginLeft:"-0.5px" }} />
-        </div>
+
         {/* Outer ambient glow — purely decorative, doesn't affect layout */}
         {hovered && (
           <div style={{
