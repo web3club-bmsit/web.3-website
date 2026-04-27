@@ -483,6 +483,7 @@ export default function Hero() {
         {/* Progress Bar */}
         <div ref={progressRef} className="absolute top-0 left-0 h-[2px] bg-accent z-30 transition-[width] duration-75" style={{ width: "0%" }} />
 
+    
 
         {/* Canvas */}
         <canvas ref={canvasRef} className="absolute top-0 left-0 z-[1] transition-opacity duration-300" />
