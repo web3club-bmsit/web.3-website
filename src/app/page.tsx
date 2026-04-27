@@ -5,6 +5,7 @@ import TeamGrid from "@/components/TeamGrid";
 import UpcomingEventHome from "@/components/UpcomingEventHome";
 import HeroInteractive from "@/components/HeroInteractive";
 import Footer from "@/components/Footer";
+import DecryptoUpdates from "@/components/DecryptoUpdates";
 
 export default function Home() {
   return (
@@ -16,12 +17,8 @@ export default function Home() {
       {/* Events section */}
       <UpcomingEventHome />
 
-
-      {/*
-        Add more sections below as they are built:
-        <Team />
-        <Blog />
-      */}
+      {/* Decrypto Updates — directly above footer */}
+      <DecryptoUpdates />
     </main>
   );
 }
