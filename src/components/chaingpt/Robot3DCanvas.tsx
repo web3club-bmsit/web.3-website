@@ -20,8 +20,8 @@ export default function Robot3DCanvas({
     const container = containerRef.current;
     if (!container) return;
 
-    let width = container.clientWidth || 320;
-    let height = container.clientHeight || 320;
+    let width = container.clientWidth || 340;
+    let height = container.clientHeight || 340;
 
     // Scene
     const scene = new THREE.Scene();
@@ -31,7 +31,7 @@ export default function Robot3DCanvas({
     camera.position.set(0, 0, 4.5);
     camera.lookAt(0, 0, 0);
 
-    // Renderer
+    // Renderer with ACES Filmic Tone Mapping for accurate, punchy color reproduction
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
@@ -40,29 +40,31 @@ export default function Robot3DCanvas({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
+    // Balanced Lighting to prevent bleaching / washing out reds into pink
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
     // Key Light
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
-    keyLight.position.set(4, 6, 5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    keyLight.position.set(4, 5, 5);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
     scene.add(keyLight);
 
     // Red cyber rim light (matches branding)
-    const rimLight = new THREE.DirectionalLight(0xff2200, 1.8);
+    const rimLight = new THREE.DirectionalLight(0xe50914, 1.2);
     rimLight.position.set(-4, -2, -3);
     scene.add(rimLight);
 
-    // Subtle front fill light
-    const fillLight = new THREE.DirectionalLight(0xfff5ee, 1.2);
+    // Soft front fill
+    const fillLight = new THREE.DirectionalLight(0xfffaf0, 0.9);
     fillLight.position.set(-3, 3, 4);
     scene.add(fillLight);
 
@@ -72,6 +74,19 @@ export default function Robot3DCanvas({
 
     let mixer: THREE.AnimationMixer | null = null;
     let isDisposed = false;
+
+    // Dedicated Eye Material (Pure Glowing White matching original reference)
+    const eyeMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveIntensity: 1.5,
+      roughness: 0.1,
+      metalness: 0.0,
+    });
+
+    // Brand Red colors (#E50914)
+    const BRAND_RED = new THREE.Color("#E50914");
+    const BRAND_RED_EMISSIVE = new THREE.Color("#E50914");
 
     // Load robot.glb
     const loader = new GLTFLoader();
@@ -89,15 +104,56 @@ export default function Robot3DCanvas({
         // Center model inside pivot group
         model.position.set(-center.x, -center.y, -center.z);
 
-        // Enable shadows and enhance materials
+        // Material color correction
         model.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             mesh.castShadow = true;
             mesh.receiveShadow = true;
+
+            // 1. The two robot face eyes (Cylinder & Cylinder001) -> Make them Crisp Glowing White!
+            if (mesh.name === "Cylinder" || mesh.name === "Cylinder001") {
+              mesh.material = eyeMaterial;
+              return;
+            }
+
             if (mesh.material) {
               const mat = mesh.material as THREE.MeshStandardMaterial;
-              mat.roughness = Math.min(mat.roughness ?? 0.4, 0.5);
+
+              // 2. Head bezel & chest accents (Brand_Logo_Red) -> Fix from washed pink to bold Brand Red (#E50914)
+              if (mat.name === "Brand_Logo_Red") {
+                mat.color.copy(BRAND_RED);
+                mat.emissive.setHex(0x220004);
+                mat.roughness = 0.25;
+              }
+
+              // 3. Constellation Nodes (Heroic_Node_* with Brand_Neon_Red) -> Vibrant Brand Red
+              if (mat.name === "Brand_Neon_Red") {
+                mat.color.copy(BRAND_RED);
+                mat.emissive.copy(BRAND_RED_EMISSIVE);
+                mat.emissiveIntensity = 1.3;
+              }
+
+              // 4. Constellation Links (HeroicLinkObj_* with Brand_Heroic_Link.001) -> Sharp Brand Red lines
+              if (mat.name.includes("Brand_Heroic_Link")) {
+                mat.color.copy(BRAND_RED);
+                mat.emissive.copy(BRAND_RED_EMISSIVE);
+                mat.emissiveIntensity = 1.2;
+                mat.transparent = true;
+                mat.opacity = 0.9;
+              }
+
+              // 5. White body panels -> clean crisp white
+              if (mat.name === "Brand_White") {
+                mat.color.setHex(0xfafafa);
+                mat.roughness = 0.28;
+              }
+
+              // 6. Face screen -> deep dark glass
+              if (mat.name === "Brand_Screen") {
+                mat.color.setHex(0x0f1412);
+                mat.roughness = 0.08;
+              }
             }
           }
         });
@@ -218,8 +274,8 @@ export default function Robot3DCanvas({
     // Resize observer
     const handleResize = () => {
       if (!container) return;
-      width = container.clientWidth || 320;
-      height = container.clientHeight || 320;
+      width = container.clientWidth || 340;
+      height = container.clientHeight || 340;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -241,6 +297,7 @@ export default function Robot3DCanvas({
       }
       renderer.dispose();
       scene.clear();
+      eyeMaterial.dispose();
     };
   }, [enableInteraction]);
 
