@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Bot, Disc3, Sparkles, Terminal, Activity, ShieldCheck, Zap, Send } from "lucide-react";
 import { motion, useSpring, useMotionValue } from "framer-motion";
 import ScrambleText from "@/components/chaingpt/ScrambleText";
+import Robot3DCanvas from "@/components/chaingpt/Robot3DCanvas";
 
 export default function LaboratoryPage() {
   const [activeTab, setActiveTab] = useState<"agent" | "coin">("coin");
@@ -149,17 +150,7 @@ export default function LaboratoryPage() {
               className="relative w-full h-full flex items-center justify-center pointer-events-none"
             >
               {activeTab === "agent" ? (
-                <video
-                  key="agent_video"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(229,9,20,0.3)]"
-                >
-                  <source src="/chaingpt-assets/LABS_robot_CHROME_VP9.webm" type="video/webm" />
-                  <source src="/chaingpt-assets/LABS_robot_SAFARI_HEVC.mp4" type="video/mp4" />
-                </video>
+                <Robot3DCanvas className="w-full h-full filter drop-shadow-[0_20px_40px_rgba(229,9,20,0.35)]" />
               ) : (
                 <video
                   key="coin_video"

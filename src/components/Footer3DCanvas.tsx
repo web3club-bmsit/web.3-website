@@ -168,3 +168,4 @@ export default function Footer3DCanvas({ className = "", mousePos = { x: 0, y: 0
     />
   );
 }
+

@@ -8,6 +8,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MagneticButton from "@/components/MagneticButton";
 import ScrambleText from "./ScrambleText";
+import Robot3DCanvas from "./Robot3DCanvas";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -46,7 +47,6 @@ export default function IncubationSection() {
   const leftColRef = useRef<HTMLDivElement>(null);
   const centerColRef = useRef<HTMLDivElement>(null);
   const rightColRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const prevCard = () => {
     setStartIndex((prev) => (prev === 0 ? SUPPORT_CARDS.length - 2 : prev - 1));
@@ -56,15 +56,6 @@ export default function IncubationSection() {
   };
 
   const visibleCards = SUPPORT_CARDS.slice(startIndex, startIndex + 2);
-
-  // Ensure video plays
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
-  }, []);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -222,24 +213,14 @@ export default function IncubationSection() {
             </div>
           </div>
 
-          {/* Center Column: AI Robot (NO toggle — dedicated robot display) */}
+          {/* Center Column: Interactive 3D Robot (robot.glb) */}
           <div ref={centerColRef} className="lg:col-span-4 flex flex-col items-center justify-center relative py-4 lg:py-0">
-            <div className="relative w-full max-w-[300px] sm:max-w-[340px] aspect-square rounded-2xl overflow-visible flex items-center justify-center">
+            <div className="relative w-full max-w-[320px] sm:max-w-[360px] aspect-square rounded-2xl overflow-visible flex items-center justify-center">
               {/* Subtle red ambient glow */}
-              <div className="absolute inset-8 blur-3xl rounded-full bg-[#E50914]/15 pointer-events-none" />
+              <div className="absolute inset-8 blur-3xl rounded-full bg-[#E50914]/20 pointer-events-none" />
 
-              <video
-                ref={videoRef}
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                className="w-full h-full object-contain pointer-events-none filter drop-shadow-[0_20px_40px_rgba(229,9,20,0.3)]"
-              >
-                <source src="/chaingpt-assets/LABS_robot_CHROME_VP9.webm" type="video/webm" />
-                <source src="/chaingpt-assets/LABS_robot_SAFARI_HEVC.mp4" type="video/mp4" />
-              </video>
+              {/* Real 3D Robot Model */}
+              <Robot3DCanvas className="w-full h-full filter drop-shadow-[0_20px_40px_rgba(229,9,20,0.35)]" />
             </div>
 
             {/* Link to Lab */}
