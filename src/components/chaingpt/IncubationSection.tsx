@@ -242,11 +242,8 @@ export default function IncubationSection() {
               </video>
             </div>
 
-            {/* Status line */}
-            <div className="mt-3 text-center space-y-1.5">
-              <span className="font-mono text-[10px] text-foreground/45 uppercase tracking-wider block">
-                :: AUTONOMOUS AI AGENT — ACTIVE TELEMETRY
-              </span>
+            {/* Link to Lab */}
+            <div className="mt-3 text-center">
               <Link
                 href="/laboratory"
                 className="inline-flex items-center gap-1.5 font-mono text-[11px] text-foreground/70 hover:text-[#E50914] tracking-wider uppercase transition-colors group cursor-pointer"

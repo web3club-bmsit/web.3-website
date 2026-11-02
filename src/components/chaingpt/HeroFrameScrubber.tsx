@@ -203,7 +203,7 @@ export default function HeroFrameScrubber({
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/10">
           <div className="font-mono text-xs text-white/70 tracking-widest uppercase animate-pulse">
-            INITIALIZING 3D TELEMETRY...
+            LOADING 3D VIEW...
           </div>
         </div>
       )}

@@ -136,8 +136,8 @@ export default function FaqSection({ faqs = DEFAULT_FAQS }: FaqSectionProps) {
               <span className="tech-bracket-br" />
 
               <div className="w-full flex justify-between text-[10px] font-mono text-foreground/40">
-                <span>QUERY_ENGINE</span>
-                <span>SEC_V4</span>
+                <span>COMMUNITY</span>
+                <span>FAQ</span>
               </div>
 
                             {/* 3D Glass Orb Engine (Official ChainGPT 3D Element) */}
@@ -161,7 +161,7 @@ export default function FaqSection({ faqs = DEFAULT_FAQS }: FaqSectionProps) {
                   animate={{ opacity: [1, 0, 1] }}
                   transition={{ duration: 1.4, repeat: Infinity }}
                 />
-                <span>KNOWLEDGE_BASE_ONLINE</span>
+                <span>HELP CENTER</span>
               </div>
             </div>
           </div>

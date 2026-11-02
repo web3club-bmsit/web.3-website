@@ -11,7 +11,7 @@ export default function LaboratoryPage() {
   const [messages, setMessages] = useState<Array<{ role: "system" | "agent" | "user"; text: string }>>([
     {
       role: "system",
-      text: "SYS_INIT // BMSIT Web.3 Autonomous Agent connected to Mainnet Node.",
+      text: "Hello! Welcome to the BMSIT Web.3 Innovation Lab.",
     },
     {
       role: "agent",
@@ -59,7 +59,7 @@ export default function LaboratoryPage() {
       } else if (lower.includes("audit") || lower.includes("contract") || lower.includes("solidity")) {
         reply = "We offer free peer-to-peer Solidity/Rust code reviews, gas profiling, and static analysis using Slither and Mythril.";
       } else {
-        reply = `Telemetry received: "${userText}". Our lead student researchers are available in the Web.3 Innovation Lab (Room 304, BMSIT&M).`;
+        reply = `Message received: "${userText}". Our lead student researchers are available in the Web.3 Innovation Lab (Room 304, BMSIT&M).`;
       }
 
       setMessages((prev) => [...prev, { role: "agent", text: reply }]);
@@ -81,7 +81,7 @@ export default function LaboratoryPage() {
           <span className="hidden sm:inline-block text-border">/</span>
           <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            BMSIT_NODE_ACTIVE
+            LABORATORY
           </span>
         </div>
 
@@ -180,7 +180,7 @@ export default function LaboratoryPage() {
               <span>{activeTab === "agent" ? "STATUS: AUTONOMOUS_ACTIVE" : "STANDARD: ERC-20 // 24FPS_3D"}</span>
               <span className="flex items-center gap-1.5">
                 <Activity className="w-3 h-3 text-[#E50914] animate-pulse" />
-                <span>100% ONLINE</span>
+                <span>ACTIVE</span>
               </span>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function LaboratoryPage() {
                 <Terminal className="w-3.5 h-3.5 text-[#E50914]" />
                 <span>CO-PILOT_CONSOLE</span>
               </span>
-              <span>NODE: #BMSIT-01</span>
+              <span>BMSIT LAB</span>
             </div>
 
             {/* Chat History */}

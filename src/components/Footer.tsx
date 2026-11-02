@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { socialLinks } from "@/data/footerData";
+import Footer3DCanvas from "./Footer3DCanvas";
 
 // Subtle ambient cubes placed along the perimeter to frame the central branding
 const CUBES = [
@@ -178,50 +179,6 @@ export default function Footer() {
         {/* Subtle grid background */}
         <div className="absolute inset-0 lab-grid-bg opacity-40 pointer-events-none" />
 
-        {/* Ambient Geometric Cubes (Confined to Periphery to prevent text clashing) */}
-        <div className="cube-scene">
-          {CUBES.map((c, i) => {
-            const pX = (mousePos.x * (c.z + 600)) / 45;
-            const pY = (mousePos.y * (c.z + 600)) / 45;
-            
-            return (
-              <div 
-                key={i} 
-                className={`cube-parallax-layer ${i > 4 ? 'hidden md:block' : ''}`}
-                style={{
-                  left: `${c.left}%`,
-                  top: `${c.top}%`,
-                  transform: `translate3d(${pX}px, ${pY}px, ${c.z}px)`,
-                  zIndex: c.z > 0 ? 5 : 1
-                }}
-              >
-                <div 
-                  className="cube-wrapper"
-                  style={{ 
-                    '--duration': `${c.duration}s`, 
-                    '--delay': `${c.delay}s` 
-                  } as React.CSSProperties}
-                >
-                  <div 
-                    className="cube"
-                    style={{ 
-                      '--size': `${c.size}px`,
-                      transform: `rotateX(${c.rx}deg) rotateY(${c.ry}deg)`
-                    } as React.CSSProperties}
-                  >
-                    <div className="cube-face face-front"></div>
-                    <div className="cube-face face-back"></div>
-                    <div className="cube-face face-right"></div>
-                    <div className="cube-face face-left"></div>
-                    <div className="cube-face face-top"></div>
-                    <div className="cube-face face-bottom"></div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
         {/* Content Container */}
         <div className="relative z-10 flex flex-col justify-end w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-12 sm:pt-16 pb-8">
           
@@ -246,7 +203,7 @@ export default function Footer() {
             {/* Center Status / Copyright */}
             <div className="text-center text-foreground/60 text-[10px] sm:text-[11px] tracking-widest uppercase">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse" />
-              STATUS: ONLINE // &copy; 2026 WEB.3_ BMSIT
+              &copy; 2026 WEB.3 CLUB BMSIT
             </div>
 
             {/* Social Links */}
@@ -264,15 +221,18 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Clean, Sleek Cyber Branding Display */}
-          <div className="relative my-8 sm:my-10 py-8 sm:py-12 border border-border/60 bg-foreground/[0.015] backdrop-blur-sm rounded-2xl overflow-hidden">
-            {/* Blueprint Technical Corner Crosshairs */}
-            <span className="absolute top-3 left-3 font-mono text-xs text-[#BE4105]/80 select-none">+</span>
-            <span className="absolute top-3 right-3 font-mono text-xs text-[#BE4105]/80 select-none">+</span>
-            <span className="absolute bottom-3 left-3 font-mono text-xs text-[#BE4105]/80 select-none">+</span>
-            <span className="absolute bottom-3 right-3 font-mono text-xs text-[#BE4105]/80 select-none">+</span>
+          {/* Clean, Sleek Cyber Branding Display with Interactive 3D FOOTER.glb */}
+          <div className="relative my-8 sm:my-10 py-12 sm:py-20 min-h-[380px] sm:min-h-[460px] border border-border/60 bg-foreground/[0.015] backdrop-blur-sm rounded-2xl overflow-hidden flex items-center justify-center">
+            {/* Real 3D GLTF Scene from FOOTER.glb */}
+            <Footer3DCanvas mousePos={mousePos} />
 
-            <div className="text-center select-none py-2 px-4 flex flex-col items-center justify-center">
+            {/* Blueprint Technical Corner Crosshairs */}
+            <span className="absolute top-3 left-3 font-mono text-xs text-[#BE4105]/80 select-none z-10">+</span>
+            <span className="absolute top-3 right-3 font-mono text-xs text-[#BE4105]/80 select-none z-10">+</span>
+            <span className="absolute bottom-3 left-3 font-mono text-xs text-[#BE4105]/80 select-none z-10">+</span>
+            <span className="absolute bottom-3 right-3 font-mono text-xs text-[#BE4105]/80 select-none z-10">+</span>
+
+            <div className="relative z-10 text-center select-none py-2 px-4 flex flex-col items-center justify-center pointer-events-none">
               {/* Main Clean Typography */}
               <div className="flex items-baseline justify-center">
                 <span className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black font-mono tracking-tight leading-none text-foreground drop-shadow-sm">
@@ -305,7 +265,7 @@ export default function Footer() {
           {/* Bottom Micro Footer */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] sm:text-[11px] font-mono text-foreground/40 pt-2">
             <div>BUILDING DECENTRALIZED FUTURES</div>
-            <div>ALL SYSTEMS OPERATIONAL // LATENCY: 24ms</div>
+            <div>BMS INSTITUTE OF TECHNOLOGY &amp; MANAGEMENT</div>
           </div>
 
         </div>

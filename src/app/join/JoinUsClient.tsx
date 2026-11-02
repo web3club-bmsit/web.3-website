@@ -133,8 +133,8 @@ export default function JoinUsClient() {
         <div className="hidden lg:block absolute top-28 bottom-12 right-[15%] w-px bg-black/10" />
 
         {/* Blueprint corner crosshairs */}
-        <span className="absolute top-32 left-10 font-mono text-xs text-black/30">┌ [SYS:JOIN_V2]</span>
-        <span className="absolute top-32 right-10 font-mono text-xs text-black/30">[LATENCY: 0.12ms] ┐</span>
+        <span className="absolute top-32 left-10 font-mono text-xs text-black/30">┌ </span>
+        <span className="absolute top-32 right-10 font-mono text-xs text-black/30"> ┐</span>
         <span className="absolute top-[108px] left-[14.6%] font-mono text-xs text-black/40">+</span>
         <span className="absolute top-[108px] right-[14.6%] font-mono text-xs text-black/40">+</span>
       </div>

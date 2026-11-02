@@ -315,55 +315,7 @@ export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
             zIndex: 1,
             overflow: "hidden",
           }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              height: "2px",
-              background:
-                "linear-gradient(to right, transparent, rgba(229,9,20,0.15), transparent)",
-              animation: "scanline 9s linear infinite",
-            }}
-          />
-        </div>
-
-        {/* Live data ticker at top */}
-        <div
-          style={{
-            position: "absolute",
-            top: "90px",
-            left: 0,
-            right: 0,
-            height: "28px",
-            background: "var(--card-bg)",
-            borderBottom: "1px solid var(--border)",
-            overflow: "hidden",
-            zIndex: 3,
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <div
-            className="data-ticker-inner"
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: "9px",
-              color: "rgba(229,9,20,0.85)",
-              letterSpacing: "0.1em",
-            }}
-          >
-            {Array.from({ length: 2 }, () =>
-              `◈ PROTOCOL_v3.1.4 ◈ NODES_ACTIVE: ${members.length
-                .toString()
-                .padStart(
-                  2,
-                  "0"
-                )} ◈ CHAIN_STATUS: NOMINAL ◈ UPTIME: 99.97% ◈ BLOCK_HEIGHT: 8,421,337 ◈ LATENCY: 12ms ◈ SYNC: COMPLETE ◈ CONTRIBUTORS: VERIFIED ◈ `
-            ).join("")}
-          </div>
-        </div>
+        />
 
         {/* ── HERO BANNER (Matched to Reference) ── */}
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-10">
@@ -398,15 +350,15 @@ export default function TeamGrid({ members }: { members: TeamMemberRow[] }) {
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#E50914] animate-pulse shadow-[0_0_8px_#E50914]" />
                 <span className="font-bold tracking-wider uppercase text-[11px] sm:text-xs">
-                  SYS:TEAM_V2.4 // PROTOCOL:VERIFIED
+                  Web.3 Club Core Team
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-foreground/40 hidden md:inline text-[11px]">
-                  BLOCK_SYNC: 100%
+                  
                 </span>
                 <span className="px-2.5 py-1 rounded-md bg-foreground/5 border border-border/80 font-bold text-foreground text-[11px] sm:text-xs">
-                  {members.length.toString().padStart(2, "0")} ACTIVE NODES
+                  {members.length} Contributors
                 </span>
               </div>
             </div>
